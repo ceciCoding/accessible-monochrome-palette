@@ -13,11 +13,14 @@ export function relativeLuminance(rgb: RGB): number {
   )
 }
 
+// Returns the real WCAG contrast ratio at full float precision.
+// Never round here — rounding belongs to the display layer (use .toFixed(2)).
+// Threshold comparisons must use the raw value so the algorithm doesn't claim
+// 4.50 when the real ratio is 4.495 (which axe and Firefox DevTools would fail).
 export function contrastRatio(a: RGB, b: RGB): number {
   const l1 = Math.max(relativeLuminance(a), relativeLuminance(b))
   const l2 = Math.min(relativeLuminance(a), relativeLuminance(b))
-  const ratio = (l1 + 0.05) / (l2 + 0.05)
-  return Math.round(ratio * 100) / 100
+  return (l1 + 0.05) / (l2 + 0.05)
 }
 
 export function contrastRatioHex(a: HexColor, b: HexColor): number {

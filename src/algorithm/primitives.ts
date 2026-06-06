@@ -25,7 +25,7 @@ export function stepTowardRatio(
     const currentLuminance = relativeLuminance(hexToRGB(current))
     const l1 = Math.max(currentLuminance, refLuminance)
     const l2 = Math.min(currentLuminance, refLuminance)
-    const ratio = Math.round(((l1 + 0.05) / (l2 + 0.05)) * 100) / 100
+    const ratio = (l1 + 0.05) / (l2 + 0.05)
 
     if (ratio >= targetRatio) return current
   }
