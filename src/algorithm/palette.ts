@@ -1,6 +1,7 @@
 import { hexToHSL, hexToRGB, hslToHex, parseHex } from '../math/color.js'
 import { contrastRatioHex } from '../math/contrast.js'
 import { darkenToRatio, lightenToRatio } from './primitives.js'
+import { AA_LARGE, AA_NORMAL } from './thresholds.js'
 import type { HexColor, Palette, ShadeEntry, Theme } from '../types.js'
 
 const WHITE = parseHex('#ffffff')
@@ -48,32 +49,38 @@ export function find700(inputHex: HexColor, theme: Theme): HexColor {
 
 export function find100(shade700: HexColor, theme: Theme): HexColor {
   return theme === 'white'
-    ? lightenToRatio(shade700, shade700, 4.5)
-    : darkenToRatio(shade700, shade700, 4.5)
+    ? lightenToRatio(shade700, shade700, AA_NORMAL)
+    : darkenToRatio(shade700, shade700, AA_NORMAL)
 }
 
 export function find300(shade700: HexColor, theme: Theme): HexColor {
   return theme === 'white'
-    ? lightenToRatio(shade700, shade700, 3.1)
-    : darkenToRatio(shade700, shade700, 3.1)
+    ? lightenToRatio(shade700, shade700, AA_LARGE)
+    : darkenToRatio(shade700, shade700, AA_LARGE)
 }
 
 export function find600(shade100: HexColor, theme: Theme): HexColor {
   return theme === 'white'
-    ? darkenToRatio(shade100, shade100, 3.1)
-    : lightenToRatio(shade100, shade100, 3.1)
+    ? darkenToRatio(shade100, shade100, AA_LARGE)
+    : lightenToRatio(shade100, shade100, AA_LARGE)
 }
 
 export function find800(shade600: HexColor, theme: Theme): HexColor {
   return theme === 'white'
-    ? darkenToRatio(shade600, shade600, 3.1)
-    : lightenToRatio(shade600, shade600, 3.1)
+    ? darkenToRatio(shade600, shade600, AA_LARGE)
+    : lightenToRatio(shade600, shade600, AA_LARGE)
 }
 
-export function find900(shade700: HexColor, theme: Theme): HexColor {
+export function find900(shade700: HexColor, shade600: HexColor, theme: Theme): HexColor {
+  const candidate = theme === 'white'
+    ? darkenToRatio(shade700, shade700, AA_LARGE)
+    : lightenToRatio(shade700, shade700, AA_LARGE)
+
+  if (contrastRatioHex(candidate, shade600) >= AA_NORMAL) return candidate
+
   return theme === 'white'
-    ? darkenToRatio(shade700, shade700, 3.1)
-    : lightenToRatio(shade700, shade700, 3.1)
+    ? darkenToRatio(candidate, shade600, AA_NORMAL)
+    : lightenToRatio(candidate, shade600, AA_NORMAL)
 }
 
 export function buildPalette(inputHex: HexColor, theme: Theme): Palette {
@@ -82,7 +89,7 @@ export function buildPalette(inputHex: HexColor, theme: Theme): Palette {
   const shade300hex = find300(shade700hex, theme)
   const shade600hex = find600(shade100hex, theme)
   const shade800hex = find800(shade600hex, theme)
-  const shade900hex = find900(shade700hex, theme)
+  const shade900hex = find900(shade700hex, shade600hex, theme)
 
   const toEntry = (hex: HexColor): ShadeEntry => {
     const rgb = hexToRGB(hex)
