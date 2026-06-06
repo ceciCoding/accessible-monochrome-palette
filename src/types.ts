@@ -27,16 +27,18 @@ export interface ShadeEntry {
 
 export type Palette = Record<ShadeKey, ShadeEntry>
 
-export type ContrastLevel = 'aa-normal' | 'aa-large' | 'fail'
+export type ContrastLevel = 'aa-normal' | 'aa-large (≥24px only)' | 'fail'
 
 export interface CompatibilityEntry {
   ratio: number
   level: ContrastLevel
 }
 
-export type CompatibilityMatrix = Record<ShadeKey, Partial<Record<ShadeKey, CompatibilityEntry>>>
+export type MatrixKey = ShadeKey | 'theme'
 
-export type BackgroundKey = ShadeKey | 'background'
+export type CompatibilityMatrix = Record<MatrixKey, Partial<Record<MatrixKey, CompatibilityEntry>>>
+
+export type BackgroundKey = ShadeKey | 'theme'
 
 export interface CompatiblePair {
   key: BackgroundKey

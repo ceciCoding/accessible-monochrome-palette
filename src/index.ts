@@ -8,7 +8,7 @@ import type { PaletteResult, Theme } from './types.js'
 export function generatePalette(hex: string, theme: Theme): PaletteResult {
   const parsed = parseHex(hex)
   const palette = buildPalette(parsed, theme)
-  const compatibility = buildCompatibilityMatrix(palette)
+  const compatibility = buildCompatibilityMatrix(palette, theme)
   const usage = buildPaletteUsage(palette, compatibility, theme)
   return { palette, usage, theme, sourceColor: parsed }
 }
@@ -24,10 +24,13 @@ export type {
   ContrastLevel,
   Theme,
   ShadeKey,
+  MatrixKey,
   HexColor,
   CSSTokens,
   BackgroundKey,
   CompatiblePair,
   ShadeUsage,
   PaletteUsage,
+  CompatibilityEntry,
+  CompatibilityMatrix,
 } from './types.js'

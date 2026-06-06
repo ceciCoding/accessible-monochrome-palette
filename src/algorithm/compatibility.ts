@@ -1,27 +1,39 @@
 import { contrastRatioHex } from '../math/contrast.js'
+import { AA_LARGE, AA_NORMAL } from './thresholds.js'
 import type {
   CompatibilityEntry,
   CompatibilityMatrix,
   ContrastLevel,
+  HexColor,
+  MatrixKey,
   Palette,
-  ShadeKey,
+  Theme,
 } from '../types.js'
 
-const SHADE_KEYS: ShadeKey[] = ['100', '300', '600', '700', '800', '900']
+const SHADE_KEYS: MatrixKey[] = ['100', '300', '600', '700', '800', '900']
+const ALL_KEYS: MatrixKey[] = ['theme', ...SHADE_KEYS]
 
-export function buildCompatibilityMatrix(palette: Palette): CompatibilityMatrix {
+const WHITE = '#ffffff' as HexColor
+const BLACK = '#000000' as HexColor
+
+export function buildCompatibilityMatrix(palette: Palette, theme: Theme): CompatibilityMatrix {
+  const themeHex = theme === 'white' ? WHITE : BLACK
+
+  const hexFor = (key: MatrixKey): HexColor =>
+    key === 'theme' ? themeHex : palette[key].hex
+
   const matrix = Object.fromEntries(
-    SHADE_KEYS.map((key) => [key, {}])
+    ALL_KEYS.map((key) => [key, {}])
   ) as CompatibilityMatrix
 
-  for (const from of SHADE_KEYS) {
-    for (const to of SHADE_KEYS) {
+  for (const from of ALL_KEYS) {
+    for (const to of ALL_KEYS) {
       if (from === to) continue
 
-      const ratio = contrastRatioHex(palette[from].hex, palette[to].hex)
+      const ratio = contrastRatioHex(hexFor(from), hexFor(to))
 
       const level: ContrastLevel =
-        ratio >= 4.5 ? 'aa-normal' : ratio >= 3.0 ? 'aa-large' : 'fail'
+        ratio >= AA_NORMAL ? 'aa-normal' : ratio >= AA_LARGE ? 'aa-large (≥24px only)' : 'fail'
 
       const entry: CompatibilityEntry = { ratio, level }
       matrix[from][to] = entry
