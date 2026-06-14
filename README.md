@@ -307,6 +307,37 @@ No bundler required — the library ships ESM and Node resolves it natively.
 
 ---
 
+## Migrating from v1
+
+v2 is a full rewrite. The algorithm is the same but everything else changed — the API is not compatible.
+
+**What changed:**
+
+- No more classes. v1 used `AccessibleColorPalette.generatePalette(...)`. v2 uses named ESM exports.
+- The output shape is different. v1 returned shade objects with a `compatibilities` key. v2 returns a `palette` object and a separate `usage` map.
+- No external dependencies. v1 used `colorsys` and `@mdhnpm/color-contrast-ratio-calculator`. v2 implements the WCAG math directly.
+- Ships an MCP server for use with AI assistants.
+
+**v1 (old):**
+
+```js
+const AccessibleColorPalette = require('accessible-color-palette')
+AccessibleColorPalette.generatePalette('#1c734e', 'black')
+// → { "700": { compatibilities: { largeText: [...], smallText: [...] }, hex, rgb, hsl } }
+```
+
+**v2 (new):**
+
+```ts
+import { generatePalette } from 'accessible-color-palette'
+generatePalette('#1c734e', 'black')
+// → { palette: { "700": { hex, rgb, hsl } }, usage: { "700": { normalText: [...], largeText: [...] } }, theme, sourceColor }
+```
+
+v1 remains available on npm as `accessible-color-palette@1.x` but is no longer maintained.
+
+---
+
 ## Credits
 
 Algorithm by **Marta Hollingsworth**.
