@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import {
@@ -14,7 +15,7 @@ import { buildCompatMatrix } from '../output/tokens.js'
 import { validatePairings } from '../output/validation.js'
 
 const server = new Server(
-  { name: 'accessible-color-palette', version: '1.0.0' },
+  { name: 'accessible-color-palette', version: '2.0.0' },
   { capabilities: { tools: {}, resources: {}, prompts: {} } }
 )
 

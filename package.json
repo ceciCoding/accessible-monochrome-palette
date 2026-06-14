@@ -1,18 +1,49 @@
 {
   "name": "accessible-color-palette",
-  "version": "1.0.0",
+  "version": "2.0.0",
+  "description": "Generate WCAG 2.2 AA monochromatic palettes from a single hex color. Ships as a TypeScript library and as an MCP server for AI assistants.",
   "type": "module",
+  "main": "./dist/index.js",
   "exports": {
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     }
   },
+  "bin": {
+    "accessible-color-palette-mcp": "./dist/mcp/server.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
+    "prepublishOnly": "npm run build && npm test",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "mcp": "node dist/mcp/server.js"
+  },
+  "keywords": [
+    "wcag",
+    "accessibility",
+    "a11y",
+    "color",
+    "palette",
+    "contrast",
+    "monochrome",
+    "mcp"
+  ],
+  "author": "Cecilia Olivera",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ceciCoding/accessible-monochrome-palette"
+  },
+  "homepage": "https://github.com/ceciCoding/accessible-monochrome-palette#readme",
+  "engines": {
+    "node": ">=18"
   },
   "devDependencies": {
     "@types/node": "^25.6.2",

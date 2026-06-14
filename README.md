@@ -61,17 +61,75 @@ console.log(toCSSTokens(result, 'brand'))
 
 ### As an MCP server
 
-```bash
-npm run build
-npm run mcp
+Add it to your MCP client config (Claude Desktop, Cursor, etc.) — no installation required:
+
+```json
+{
+  "mcpServers": {
+    "accessible-color-palette": {
+      "command": "npx",
+      "args": ["-y", "accessible-color-palette"]
+    }
+  }
+}
 ```
 
-Connect any MCP-compatible client (Claude Desktop, Cursor, etc.) to the running server. Two tools are exposed:
+Or install globally and point to the binary:
+
+```bash
+npm install -g accessible-color-palette
+```
+
+```json
+{
+  "mcpServers": {
+    "accessible-color-palette": {
+      "command": "accessible-color-palette-mcp"
+    }
+  }
+}
+```
+
+There are two ways to use the MCP server.
+
+---
+
+#### Option A — Direct tool use
+
+Call the tools yourself, or let the model use them freely. Good for querying palette data or generating tokens when you're in control of the flow.
 
 | Tool | Description |
 |------|-------------|
 | `generate_palette` | Returns the full palette + usage map as JSON |
-| `generate_css_tokens` | Returns ready-to-paste CSS custom property declarations |
+| `validate_pairings` | Validates a list of foreground/background shade pairs — returns `proceed: false` if any pair fails |
+| `generate_css_tokens` | Returns a CSS `:root {}` block with inline WCAG comments per shade |
+
+There's also a resource template you can read directly:
+
+```
+palette://{hex}/{theme}
+```
+
+Returns the full WCAG compatibility matrix as JSON — useful as a reference before making color decisions.
+
+---
+
+#### Option B — Guided prompt (recommended for design tasks)
+
+When you delegate a design task to an AI agent, use the `plan-palette-usage` prompt instead of calling tools directly. The prompt injects a strict 4-step workflow:
+
+1. Read the compatibility matrix (even if read earlier in the conversation)
+2. Document every planned color pairing inside a `<thinking>` block and check each one
+3. Call `validate_pairings` — the model is **blocked** until all pairs pass
+4. Only then call `generate_css_tokens`
+
+This prevents models from combining colors based on intuition or prior examples, which is the most common cause of inaccessible AI-generated CSS.
+
+**Example instruction to your agent:**
+
+> "Use the `plan-palette-usage` prompt with hex=`1f7a54` and theme=`white`, then design a user profile card."
+
+Without the prompt the model may or may not skip validation. With it, every pairing is verified before a single line of CSS is written.
 
 ---
 
@@ -212,34 +270,6 @@ flowchart TD
 - **Strict TypeScript.** `strict: true`, branded `HexColor` type to prevent raw strings leaking through the API.
 - **Pure functions.** Same input, same output. The only side effects are in `src/mcp/server.ts`.
 - **Single responsibility.** Each function does exactly one thing.
-
----
-
-## Project structure
-
-```
-src/
-  types.ts              -- all TypeScript types and branded primitives
-  math/
-    color.ts            -- hex <-> RGB <-> HSL conversions
-    contrast.ts         -- WCAG relative luminance + contrast ratio
-  algorithm/
-    primitives.ts       -- stepTowardRatio, lightenToRatio, darkenToRatio
-    palette.ts          -- find700...find900, buildPalette
-    compatibility.ts    -- buildCompatibilityMatrix (internal)
-  output/
-    tokens.ts           -- toCSSTokens
-    usage.ts            -- buildPaletteUsage
-  index.ts              -- public API (generatePalette, toCSSTokens)
-  mcp/
-    server.ts           -- MCP server (only file with side effects)
-
-tests/
-  math/
-  algorithm/
-  output/
-  integration.test.ts
-```
 
 ---
 
