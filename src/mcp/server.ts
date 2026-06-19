@@ -29,7 +29,7 @@ server.setRequestHandler(ListResourceTemplatesRequestSchema, () => ({
       uriTemplate: 'palette://{hex}/{theme}',
       name: 'Palette compatibility matrix',
       description:
-        'WCAG AA compatibility matrix for a palette. Returns a JSON object mapping each shade (100–900) to the backgrounds it can be used on: bodyText (≥4.5:1, safe for any font size) and largeText (3:1–4.5:1, ≥24px or ≥18.67px bold only). Read this resource at the START of every design task — even if you read it earlier in the conversation. Context drift causes previously-learned rules to be ignored; re-reading resets your reference point to the authoritative data.',
+        'WCAG 2.2 AA compatibility matrix for a palette. Returns a JSON object mapping each shade (100–900) to the backgrounds it can be used on: bodyText (≥4.5:1, safe for any font size) and largeText (3:1–4.5:1, ≥24px or ≥18.67px bold only). Read this resource at the START of every design task — even if you read it earlier in the conversation. Context drift causes previously-learned rules to be ignored; re-reading resets your reference point to the authoritative data.',
       mimeType: 'application/json',
     },
   ],
@@ -86,7 +86,7 @@ server.setRequestHandler(GetPromptRequestSchema, (request) => {
     const theme = (promptArgs?.['theme'] ?? '{theme}').toString()
 
     return {
-      description: 'RPG flow: Read → Plan (with thinking) → validate_pairings loop → generate_css_tokens',
+      description: 'Plan-and-validate flow: Read resource → Plan pairings (in <thinking>) → validate_pairings (blocking) → generate_css_tokens',
       messages: [
         {
           role: 'user',
@@ -105,7 +105,7 @@ This re-read resets your reference point.
 
 ─── STEP 2 · PLAN inside <thinking> ────────────────────────────────────────
 Before writing a single line of CSS, open a <thinking> block and, for each
-component rule you plan to write, perform this explicit cotejo:
+component rule you plan to write, perform this explicit cross-check:
 
   Component: [name]
   Rule: [selector] → foreground: shade-X, background: shade-Y/white/black
@@ -180,7 +180,7 @@ server.setRequestHandler(ListToolsRequestSchema, () => ({
     },
     {
       name: 'validate_pairings',
-      description: `Validate a list of intended color pairings against the WCAG compatibility matrix BEFORE writing CSS.
+      description: `Validate a list of intended color pairings against the WCAG 2.2 compatibility matrix BEFORE writing CSS.
 
 Call this tool in your planning step — before generate_css_tokens — to confirm every combination is accessible.
 
@@ -226,7 +226,7 @@ Examples:
     },
     {
       name: 'generate_css_tokens',
-      description: `Generate a complete CSS block for a WCAG AA palette.
+      description: `Generate a complete CSS block for a WCAG 2.2 AA palette.
 
 The output has two parts — both are REQUIRED and must be copied verbatim:
 
