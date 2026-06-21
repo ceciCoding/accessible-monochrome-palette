@@ -13,11 +13,14 @@ import {
 import { generatePalette, toCSSTokens } from '../index.js'
 import { buildCompatMatrix } from '../output/tokens.js'
 import { validatePairings } from '../output/validation.js'
+import { SessionGate } from './session-gate.js'
 
 const server = new Server(
   { name: 'accessible-color-palette', version: '2.0.0' },
   { capabilities: { tools: {}, resources: {}, prompts: {} } }
 )
+
+const sessionGate = new SessionGate()
 
 // ─── Resources ───────────────────────────────────────────────────────────────
 
@@ -133,6 +136,11 @@ The response includes a "proceed" field.
 You MUST NOT output component CSS while proceed is false.
 You MUST repeat this loop until proceed is true.
 
+NOTE: this is not just guidance — it is enforced server-side. generate_css_tokens
+will hard-reject (throw) for this exact hex+theme until validate_pairings has
+returned proceed: true at least once in this session. Skipping this step does
+not save you a round-trip; it costs you one.
+
 ─── STEP 4 · GENERATE ──────────────────────────────────────────────────────
 Call: generate_css_tokens({ hex: "${hex}", theme: "${theme}" })
 
@@ -228,6 +236,8 @@ Examples:
       name: 'generate_css_tokens',
       description: `Generate a complete CSS block for a WCAG 2.2 AA palette.
 
+REQUIRES validate_pairings to have already passed (proceed: true) for this exact hex+theme in this session — call it first or this tool will reject the request.
+
 The output has two parts — both are REQUIRED and must be copied verbatim:
 
 1. A manifest block comment listing every valid pairing by category:
@@ -310,6 +320,10 @@ server.setRequestHandler(CallToolRequestSchema, (request) => {
       })),
     )
 
+    if (report.allPass) {
+      sessionGate.markValidated(hex, theme)
+    }
+
     const response = {
       ...report,
       proceed: report.allPass,
@@ -330,6 +344,13 @@ server.setRequestHandler(CallToolRequestSchema, (request) => {
 
     if (typeof hex !== 'string' || (theme !== 'white' && theme !== 'black')) {
       throw new Error('Invalid arguments: hex must be string, theme must be "white" or "black"')
+    }
+
+    if (!sessionGate.isValidated(hex, theme)) {
+      throw new Error(
+        `BLOCKED: generate_css_tokens requires validate_pairings to pass first for hex="${hex}" theme="${theme}". ` +
+          `Call validate_pairings({ hex: "${hex}", theme: "${theme}", pairings: [...] }) and get proceed: true before retrying.`,
+      )
     }
 
     const result = generatePalette(hex, theme)
