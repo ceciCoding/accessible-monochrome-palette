@@ -152,7 +152,11 @@ Follow those instructions before writing component CSS.
 ✗ Using a shade marked bg-only as a text color
 ✗ Outputting CSS while validate_pairings returned proceed: false
 ✗ Removing or editing inline comments from generate_css_tokens output
-✗ Assuming a pairing is safe because it "looked correct" in a prior example`,
+✗ Assuming a pairing is safe because it "looked correct" in a prior example
+✗ Using a large-text-only pairing below the size threshold because the text is
+  "decorative", "secondary", "a tag/badge", or "non-critical" — WCAG 1.4.3 has
+  no such exception. If you catch yourself reasoning your way around a level
+  you just computed as failing, that reasoning is wrong, not the rule.`,
           },
         },
       ],

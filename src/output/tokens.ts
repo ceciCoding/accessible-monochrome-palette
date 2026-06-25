@@ -70,6 +70,8 @@ export function toCSSTokens(result: PaletteResult, prefix: string = 'color'): CS
   if (largeLines.length) {
     manifest.push(` * LARGE TEXT ONLY (≥24px or ≥18.67px bold, 3:1–4.5:1):`)
     manifest.push(` *   These pairings are PROHIBITED for body text at any size.`)
+    manifest.push(` *   No exception exists for "decorative", "secondary", or "non-critical" text —`)
+    manifest.push(` *   WCAG 1.4.3 applies to all visible text regardless of its semantic importance.`)
     for (const l of largeLines) manifest.push(` *   ${l}`)
     manifest.push(` *`)
   }
