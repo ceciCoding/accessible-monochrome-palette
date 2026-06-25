@@ -12,7 +12,7 @@ import {
 } from '@modelcontextprotocol/sdk/types.js'
 import { generatePalette, toCSSTokens } from '../index.js'
 import { buildCompatMatrix } from '../output/tokens.js'
-import { validatePairings } from '../output/validation.js'
+import { validatePairings, checkContrast } from '../output/validation.js'
 import { SessionGate } from './session-gate.js'
 
 const server = new Server(
@@ -32,7 +32,7 @@ server.setRequestHandler(ListResourceTemplatesRequestSchema, () => ({
       uriTemplate: 'palette://{hex}/{theme}',
       name: 'Palette compatibility matrix',
       description:
-        'WCAG 2.2 AA compatibility matrix for a palette. Returns a JSON object mapping each shade (100–900) to the backgrounds it can be used on: bodyText (≥4.5:1, safe for any font size) and largeText (3:1–4.5:1, ≥24px or ≥18.67px bold only). Read this resource at the START of every design task — even if you read it earlier in the conversation. Context drift causes previously-learned rules to be ignored; re-reading resets your reference point to the authoritative data.',
+        'WCAG 2.2 AA compatibility matrix for a palette. Returns a JSON object mapping each shade (100–900) to the backgrounds it can be used on: bodyText (≥4.5:1, safe for any font size) and largeText (3:1–4.5:1, ≥24px or ≥18.67px bold only). Read this resource at the START of every design task — even if you read it earlier in the conversation. Context drift causes previously-learned rules to be ignored; re-reading resets your reference point to the authoritative data. This matrix only covers the FOUNDATION layer (one hue, varying lightness) — it says nothing about whether the design needs semantic accent colors (error/success/warning/info). Decide that separately; if you add one, validate it with check_contrast, not against this matrix.',
       mimeType: 'application/json',
     },
   ],
@@ -169,7 +169,7 @@ server.setRequestHandler(ListToolsRequestSchema, () => ({
     {
       name: 'generate_palette',
       description:
-        'Generate a WCAG 2.2 AA compliant monochromatic color palette from any hex color. Returns 6 shades (100–900) guaranteed to meet contrast requirements, plus a full compatibility matrix showing which shade pairs are safe for body text (≥4.5:1) and which are large-text-only (3:1–4.5:1).',
+        'Generate the FOUNDATION color scale for a design from any seed hex color: 6 shades (100–900) with every contrast ratio precomputed against WCAG 2.2 AA, plus a full compatibility matrix showing which shade pairs are safe for body text (≥4.5:1) and which are large-text-only (3:1–4.5:1). Technically this scale is monochromatic (one hue, varying lightness) — but that describes the math, not a limit on your palette. Most real interfaces still need 1-2 semantic accent colors (error/success/warning/info, sale/promo badges) on top of this foundation for state communication that a single hue cannot carry; that decision is independent of this tool. If the design calls for an accent, pick a hex for it and validate it with check_contrast before using it as text or background — this matrix does not cover accent colors.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -197,7 +197,13 @@ Returns level "aa-normal" (≥4.5:1, any size), "aa-large" (3:1–4.5:1, large t
 Examples:
   ✓ { foreground: "700", background: "white" } → aa-normal, proceed: true
   ⚠ { foreground: "600", background: "100" }  → aa-large,  proceed: true (large text only)
-  ✗ { foreground: "100", background: "white" } → fail,      proceed: false — BLOCKED`,
+  ✗ { foreground: "100", background: "white" } → fail,      proceed: false — BLOCKED
+
+NOTE: this tool only accepts shade keys (100–900) and "white"/"black" — it does
+NOT validate accent colors outside the palette. If your design needs an accent
+hex (e.g. a status/brand color not produced by generate_palette), use
+check_contrast instead, passing the accent hex against the relevant shade hex
+or white/black.`,
       inputSchema: {
         type: 'object',
         properties: {
@@ -253,7 +259,15 @@ The output has two parts — both are REQUIRED and must be copied verbatim:
 WRONG: ignoring the comments and using shade-100 as a text color
 CORRECT: reading "/* bg-only */" and using shade-100 only as a background
 
-Do not remove, rename, or rewrite the comments — they are the authoritative accessibility rules.`,
+Do not remove, rename, or rewrite the comments — they are the authoritative accessibility rules.
+
+ACCENT COLORS: this tool only emits variables for the foundation shades.
+If the component CSS you are about to write also needs an accent color (a
+hex NOT in this palette — e.g. a status/success/error color), call
+check_contrast({ foreground: accentHex, background: shadeHexOrWhiteOrBlack })
+for every pairing that involves that accent BEFORE using it as text or on a
+background. Do not assume an accent is accessible just because it "looks"
+dark or light enough.`,
       inputSchema: {
         type: 'object',
         properties: {
@@ -272,6 +286,35 @@ Do not remove, rename, or rewrite the comments — they are the authoritative ac
           },
         },
         required: ['hex', 'theme'],
+      },
+    },
+    {
+      name: 'check_contrast',
+      description: `Check the WCAG 2.2 contrast ratio between any two hex colors — independent of any generated palette.
+
+Use this to validate an accent color (a hex that is NOT part of the foundation palette) against a known background: white, black, or the hex of a specific palette shade you already have (e.g. from generate_palette or validate_pairings output).
+
+This does NOT generate or modify a palette and does NOT require validate_pairings to have run first. It is a free-standing contrast lookup.
+
+Returns ratio (raw float), level ("aa-normal" ≥4.5:1 any size, "aa-large" 3:1–4.5:1 large text only ≥24px or ≥18.67px bold, "fail" below 3:1), and a human-readable message.
+
+Examples:
+  ✓ { foreground: "#0a5", background: "#ffffff" } → aa-normal
+  ⚠ { foreground: "#f80", background: "#1a1a1a" } → aa-large
+  ✗ { foreground: "#ccc", background: "#ffffff" } → fail`,
+      inputSchema: {
+        type: 'object',
+        properties: {
+          foreground: {
+            type: 'string',
+            description: 'Text/foreground hex color, e.g. "#FF5733" or "FF5733"',
+          },
+          background: {
+            type: 'string',
+            description: 'Background hex color the foreground will sit on',
+          },
+        },
+        required: ['foreground', 'background'],
       },
     },
   ],
@@ -334,6 +377,21 @@ server.setRequestHandler(CallToolRequestSchema, (request) => {
 
     return {
       content: [{ type: 'text', text: JSON.stringify(response, null, 2) }],
+    }
+  }
+
+  if (name === 'check_contrast') {
+    const foreground = args['foreground']
+    const background = args['background']
+
+    if (typeof foreground !== 'string' || typeof background !== 'string') {
+      throw new Error('Invalid arguments: foreground and background must be hex color strings')
+    }
+
+    const result = checkContrast(foreground, background)
+
+    return {
+      content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
     }
   }
 
