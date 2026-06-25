@@ -420,6 +420,14 @@ server.setRequestHandler(CallToolRequestSchema, (request) => {
     const result = generatePalette(hex, theme)
     const tokens = toCSSTokens(result, typeof prefix === 'string' ? prefix : undefined)
 
+    const copyWarning = [
+      '⚠️ COPY THE BLOCK BELOW VERBATIM, COMMENTS INCLUDED. Do not "clean up", reformat,',
+      'or strip the comments when you paste this into a CSS file — each comment is the only',
+      'record of which pairings are accessible. A file with the right hex values and no',
+      'comments is no safer than no manifest at all for whoever edits this CSS next,',
+      'including you, later in this same task.',
+    ].join(' ')
+
     const nextStep = [
       '─── NEXT REQUIRED STEP ─────────────────────────────────────────────────',
       'Before writing ANY component CSS that references these variables:',
@@ -451,6 +459,7 @@ server.setRequestHandler(CallToolRequestSchema, (request) => {
 
     return {
       content: [
+        { type: 'text', text: copyWarning },
         { type: 'text', text: tokens },
         { type: 'text', text: nextStep },
       ],
