@@ -3,26 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Analytics Dashboard</title>
+  <title>Analytics Dashboard — Meridian</title>
   <style>
-    /* ── Palette ──────────────────────────────────────────────────────────────
-       Source: #1A1A2E  |  Theme: white
-       Validated pairs (WCAG AA):
-         900 #1e1e35  on white   → 16.25:1  aa-normal
-         800 #383862  on white   → 10.99:1  aa-normal
-         700 #6666a9  on white   →  5.20:1  aa-normal
-         900 #1e1e35  on 100     → 14.44:1  aa-normal
-         800 #383862  on 100     →  9.77:1  aa-normal
-         700 #6666a9  on 100     →  4.62:1  aa-normal
-         300 #c6c6df  on 900     →  9.71:1  aa-normal
-         900 #1e1e35  on 300     →  9.71:1  aa-normal
-         white        on 900     → 16.25:1  aa-normal (inverse)
-         white        on 800     → 10.99:1  aa-normal (inverse)
-         white        on 700     →  5.20:1  aa-normal (inverse)
-       UI component (non-text 3:1):
-         600 #8484b9  on white   →  3.51:1  ✓
-    ──────────────────────────────────────────────────────────────────────── */
+    /*
+     * WCAG AA PAIRING MANIFEST — source: #3b5ba5 · theme: white
+     *
+     * BODY TEXT (any font size, ≥4.5:1):
+     *   shade-100 (#f0f3fa) → 900, 800, 700
+     *   shade-300 (#bdcae7) → 900, 800
+     *   shade-600 (#6a88cd) → 900
+     *   shade-700 (#476abd) → white, 100
+     *   shade-800 (#253b6f) → white, 100, 300
+     *   shade-900 (#15203a) → white, 100, 300, 600
+     *
+     * LARGE TEXT ONLY (≥24px or ≥18.67px bold, 3:1–4.5:1):
+     *   shade-100 → 600
+     *   shade-300 → 700
+     *   shade-600 → 100, 800, white
+     *   shade-700 → 300, 900
+     *   shade-800 → 600
+     *   shade-900 → 700
+     *
+     * ACCENT COLORS (validated with check_contrast):
+     *   success #1a6e00 on white: 6.41:1 ✓  |  white on #1a6e00: 6.41:1 ✓
+     *   danger  #c00000 on white: 6.48:1 ✓  |  white on #c00000: 6.48:1 ✓
+     *   warning #8b6f00 on white: 4.80:1 ✓  |  white on #8b6f00: 4.80:1 ✓
+     */
 
+    /* ── Reset ──────────────────────────────────────────────────────────────── */
     *,
     *::before,
     *::after {
@@ -31,330 +39,519 @@
       padding: 0;
     }
 
+    /* ── Design tokens ──────────────────────────────────────────────────────── */
     :root {
-      --c-100: #f1f1f7;
-      --c-300: #c6c6df;
-      --c-600: #8484b9;
-      --c-700: #6666a9;
-      --c-800: #383862;
-      --c-900: #1e1e35;
-      --white:  #ffffff;
+      --color-100: #f0f3fa; /* ✅ text→900·800·700  ⚠️ lg→600 */
+      --color-300: #bdcae7; /* ✅ text→900·800  ⚠️ lg→700 */
+      --color-600: #6a88cd; /* ✅ text→900  ⚠️ lg→100·800·white */
+      --color-700: #476abd; /* ✅ text→white·100  ⚠️ lg→300·900 */
+      --color-800: #253b6f; /* ✅ text→white·100·300  ⚠️ lg→600 */
+      --color-900: #15203a; /* ✅ text→white·100·300·600  ⚠️ lg→700 */
+      --white: #ffffff;
 
-      --radius-card: 0.75rem;
-      --shadow-card: 0 1px 3px rgba(30,30,53,0.08), 0 1px 2px rgba(30,30,53,0.06);
+      --success: #1a6e00;
+      --success-bg: #e8f5e0;
+      --danger: #c00000;
+      --danger-bg: #fde7e7;
+      --warning: #8b6f00;
+      --warning-bg: #fff8e0;
+
+      --radius-sm: 0.375rem;
+      --radius-md: 0.625rem;
+      --radius-lg: 0.75rem;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 2px rgba(21, 32, 58, 0.06);
+      --shadow-md: 0 1px 3px rgba(21, 32, 58, 0.08), 0 1px 2px rgba(21, 32, 58, 0.04);
+      --shadow-lg: 0 4px 14px rgba(21, 32, 58, 0.08);
+
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: "SF Mono", "Fira Code", "Cascadia Code", Consolas, monospace;
+
+      --sidebar-width: 240px;
     }
 
-    /* ── Base ─────────────────────────────────────────────────────────────── */
-    html { scroll-behavior: smooth; }
+    /* ── Base ───────────────────────────────────────────────────────────────── */
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      "Helvetica Neue", Arial, sans-serif;
-      background: var(--c-100);
-      color: var(--c-900);
+      font-family: var(--font-sans);
+      background: var(--color-100);
+      color: var(--color-900);
       line-height: 1.5;
       min-height: 100vh;
+      display: flex;
     }
 
-    /* ── Skip link ────────────────────────────────────────────────────────── */
+    /* ── Skip link ──────────────────────────────────────────────────────────── */
     .skip-link {
-      position: absolute;
+      position: fixed;
       top: -100%;
       left: 1rem;
-      z-index: 9999;
+      z-index: 10000;
       padding: 0.5rem 1rem;
-      background: var(--c-900);
+      background: var(--color-900);
       color: var(--white);
       font-size: 0.875rem;
       font-weight: 700;
       text-decoration: none;
-      border-radius: 0 0 0.375rem 0.375rem;
-      transition: top 0.1s;
+      border-radius: 0 0 var(--radius-sm) var(--radius-sm);
     }
 
     .skip-link:focus {
       top: 0;
-      outline: 3px solid var(--c-600);
+      outline: 3px solid var(--color-600);
       outline-offset: 2px;
     }
 
-    /* ── Header ───────────────────────────────────────────────────────────── */
-    /* white on 900: 16.25:1 | 300 on 900: 9.71:1 */
-    .site-header {
-      background: var(--c-900);
-      padding: 1.25rem 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
+    /* ── Global focus ring ──────────────────────────────────────────────────── */
+    :focus-visible {
+      outline: 3px solid var(--color-700);
+      outline-offset: 3px;
+      border-radius: 2px;
     }
 
-    .site-header__logo {
+    /* ── Sidebar ────────────────────────────────────────────────────────────── */
+    /* background: 900 | text: white (16.16:1) and 300 on 900 (9.82:1) */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--color-900);
+      color: var(--white);
+      min-height: 100vh;
       display: flex;
-      align-items: center;
-      gap: 0.625rem;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 100;
     }
 
-    .logo-mark {
-      width: 2rem;
-      height: 2rem;
-      border-radius: 0.375rem;
-      background: var(--c-700);
+    .sidebar__brand {
+      padding: 1.5rem 1.5rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .sidebar__brand-icon {
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: var(--radius-sm);
+      background: var(--color-700);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
     }
 
-    .logo-mark svg {
-      width: 1.125rem;
-      height: 1.125rem;
+    .sidebar__brand-icon svg {
+      width: 1.25rem;
+      height: 1.25rem;
       fill: var(--white);
     }
 
-    .site-header h1 {
-      font-size: 1.0625rem;
+    .sidebar__brand h1 {
+      font-size: 1.125rem;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      color: var(--white);
+    }
+
+    .sidebar__nav {
+      flex: 1;
+      padding: 0.5rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.125rem;
+    }
+
+    .sidebar__nav a {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.625rem 0.875rem;
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--color-300);
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .sidebar__nav a:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--white);
+    }
+
+    .sidebar__nav a[aria-current="page"] {
+      background: var(--color-800);
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    .sidebar__nav svg {
+      width: 1.125rem;
+      height: 1.125rem;
+      flex-shrink: 0;
+      fill: currentColor;
+    }
+
+    .sidebar__user {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--color-800);
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+    }
+
+    .sidebar__user-avatar {
+      width: 2rem;
+      height: 2rem;
+      border-radius: var(--radius-full);
+      background: var(--color-700);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.8125rem;
       font-weight: 700;
       color: var(--white);
-      letter-spacing: -0.015em;
     }
 
-    .site-header__meta {
-      text-align: right;
-    }
-
-    .site-header__meta p {
-      font-size: 0.8125rem;
-      color: var(--c-300);
-      line-height: 1.4;
-    }
-
-    .site-header__meta strong {
+    .sidebar__user-info strong {
       display: block;
-      font-size: 0.875rem;
+      font-size: 0.8125rem;
       font-weight: 600;
       color: var(--white);
     }
 
-    /* ── Layout ───────────────────────────────────────────────────────────── */
+    .sidebar__user-info span {
+      font-size: 0.6875rem;
+      color: var(--color-300);
+    }
+
+    /* ── Main content area ──────────────────────────────────────────────────── */
+    .main-wrapper {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* ── Top bar ────────────────────────────────────────────────────────────── */
+    .topbar {
+      background: var(--white);
+      border-bottom: 1px solid var(--color-300);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .topbar__left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .topbar__title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--color-900);
+    }
+
+    .topbar__right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .topbar__date {
+      font-size: 0.8125rem;
+      color: var(--color-700);
+    }
+
+    .topbar__actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s, box-shadow 0.15s;
+    }
+
+    .btn--primary {
+      background: var(--color-700);
+      color: var(--white);
+    }
+
+    .btn--primary:hover {
+      background: var(--color-800);
+    }
+
+    .btn--outline {
+      background: var(--white);
+      color: var(--color-800);
+      border: 1px solid var(--color-300);
+    }
+
+    .btn--outline:hover {
+      background: var(--color-100);
+    }
+
+    /* ── Page content ───────────────────────────────────────────────────────── */
     .page {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 2rem;
+      padding: 1.75rem 2rem;
     }
 
-    /* ── Section label ────────────────────────────────────────────────────── */
-    /* 800 on 100: 9.77:1 */
+    /* ── Section headings ───────────────────────────────────────────────────── */
+    /* 800 on 100: 9.78:1 ✓ */
     .section-label {
       font-size: 0.6875rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.09em;
-      color: var(--c-800);
+      color: var(--color-800);
       margin-bottom: 0.875rem;
     }
 
-    /* ── Focus ring (global) ──────────────────────────────────────────────── */
-    :focus-visible {
-      outline: 3px solid var(--c-700);
-      outline-offset: 3px;
-      border-radius: 2px;
-    }
-
-    /* ── Stat tiles ───────────────────────────────────────────────────────── */
+    /* ── Stat tiles ─────────────────────────────────────────────────────────── */
     .stat-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 1rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1.75rem;
     }
 
-    /* 900 on white: 16.25:1 | 700 on white: 5.20:1 */
+    /* 900 on white: 16.16:1 | 700 on white: 5.17:1 | 800 on white: 10.86:1 */
     .stat-tile {
       background: var(--white);
-      border-radius: var(--radius-card);
-      border: 1px solid var(--c-300);
-      border-top-width: 3px;
-      padding: 1.375rem 1.5rem 1.25rem;
-      box-shadow: var(--shadow-card);
-      position: relative;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-300);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.2s;
     }
 
-    .stat-tile:nth-child(1) { border-top-color: var(--c-900); } /* 16.25:1 on white ✓ */
-    .stat-tile:nth-child(2) { border-top-color: var(--c-800); } /* 10.99:1 on white ✓ */
-    .stat-tile:nth-child(3) { border-top-color: var(--c-700); } /*  5.20:1 on white ✓ */
-    .stat-tile:nth-child(4) { border-top-color: var(--c-600); } /*  3.51:1 on white ✓ UI ≥3:1 */
+    .stat-tile:hover {
+      box-shadow: var(--shadow-lg);
+    }
+
+    .stat-tile__header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
 
     .stat-tile__icon {
-      width: 2rem;
-      height: 2rem;
-      border-radius: 0.375rem;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: var(--radius-md);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 0.875rem;
-      background: var(--c-100);
+    }
+
+    .stat-tile__icon--users {
+      background: #e8f0fe;
+    }
+
+    .stat-tile__icon--users svg {
+      fill: var(--color-700);
+    }
+
+    .stat-tile__icon--revenue {
+      background: #e8f5e0;
+    }
+
+    .stat-tile__icon--revenue svg {
+      fill: var(--success);
+    }
+
+    .stat-tile__icon--conversion {
+      background: #ede7f6;
+    }
+
+    .stat-tile__icon--conversion svg {
+      fill: #6247aa;
+    }
+
+    .stat-tile__icon--sessions {
+      background: #fff3e0;
+    }
+
+    .stat-tile__icon--sessions svg {
+      fill: #e65100;
     }
 
     .stat-tile__icon svg {
-      width: 1rem;
-      height: 1rem;
+      width: 1.25rem;
+      height: 1.25rem;
     }
-
-    .stat-tile:nth-child(1) .stat-tile__icon svg { fill: var(--c-900); }
-    .stat-tile:nth-child(2) .stat-tile__icon svg { fill: var(--c-800); }
-    .stat-tile:nth-child(3) .stat-tile__icon svg { fill: var(--c-700); }
-    .stat-tile:nth-child(4) .stat-tile__icon svg { fill: var(--c-600); }
 
     .stat-tile__label {
       font-size: 0.6875rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.07em;
-      color: var(--c-700); /* 5.20:1 on white ✓ */
-      margin-bottom: 0.375rem;
+      color: var(--color-700);
+      margin-bottom: 0.25rem;
     }
 
     .stat-tile__value {
-      font-size: 2.125rem;
+      font-size: 2rem;
       font-weight: 800;
-      color: var(--c-900); /* 16.25:1 on white ✓ */
+      color: var(--color-900);
       letter-spacing: -0.03em;
-      line-height: 1;
-      margin-bottom: 0.625rem;
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
     }
 
     .stat-tile__change {
       display: flex;
       align-items: center;
-      gap: 0.375rem;
+      gap: 0.5rem;
       font-size: 0.8rem;
-      color: var(--c-800); /* 10.99:1 on white ✓ */
+      color: var(--color-800);
     }
 
-    .stat-tile__badge {
+    .stat-chip {
       display: inline-flex;
       align-items: center;
-      gap: 0.125rem;
-      padding: 0.125rem 0.375rem;
-      border-radius: 9999px;
+      gap: 0.1875rem;
+      padding: 0.125rem 0.5rem;
+      border-radius: var(--radius-full);
       font-size: 0.6875rem;
       font-weight: 800;
       letter-spacing: 0.02em;
     }
 
-    .stat-tile__badge--up {
-      background: var(--c-900); /* white on 900: 16.25:1 ✓ */
-      color: var(--white);
+    .stat-chip--up {
+      background: var(--success-bg);
+      color: var(--success);
     }
 
-    .stat-tile__badge--down {
-      background: var(--c-300); /* 900 on 300: 9.71:1 ✓ */
-      color: var(--c-900);
+    .stat-chip--down {
+      background: var(--danger-bg);
+      color: var(--danger);
     }
 
-    /* ── Chart ────────────────────────────────────────────────────────────── */
-    .chart-card {
-      background: var(--white);
-      border-radius: var(--radius-card);
-      border: 1px solid var(--c-300);
-      padding: 1.5rem;
-      box-shadow: var(--shadow-card);
-      margin-bottom: 2rem;
-    }
-
-    .chart-card__header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
+    /* ── Two-column grid ────────────────────────────────────────────────────── */
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 1rem;
       margin-bottom: 1.75rem;
     }
 
-    .chart-card__title {
-      font-size: 1rem;
+    /* ── Card (generic) ─────────────────────────────────────────────────────── */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-300);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card__header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--color-300);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .card__title {
+      font-size: 0.9375rem;
       font-weight: 700;
-      color: var(--c-900); /* 16.25:1 on white ✓ */
+      color: var(--color-900);
       margin-bottom: 0.125rem;
     }
 
-    .chart-card__subtitle {
-      font-size: 0.8125rem;
-      color: var(--c-700); /* 5.20:1 on white ✓ */
-    }
-
-    .chart-card__legend {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+    .card__subtitle {
       font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--c-800); /* 10.99:1 ✓ */
+      color: var(--color-700);
     }
 
-    .legend-swatch {
-      width: 0.75rem;
-      height: 0.75rem;
-      border-radius: 2px;
-      background: var(--c-900);
-      flex-shrink: 0;
+    .card__body {
+      padding: 1.5rem;
     }
 
-    /* Bars container */
-    .chart-body {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
+    .card__body--flush {
+      padding: 0;
     }
 
-    .chart-bars-area {
+    /* ── Chart area ─────────────────────────────────────────────────────────── */
+    .chart-area {
+      padding: 1.5rem;
+    }
+
+    .chart-bars {
       display: flex;
       align-items: flex-end;
-      gap: 0.625rem;
-      height: 200px;
-      padding-bottom: 0;
-      border-bottom: 2px solid var(--c-300);
+      gap: 0.75rem;
+      height: 180px;
+      border-bottom: 2px solid var(--color-300);
       background-image:
         repeating-linear-gradient(
           to top,
           transparent 0,
           transparent calc(25% - 1px),
-          var(--c-100) calc(25% - 1px),
-          var(--c-100) 25%
+          var(--color-100) calc(25% - 1px),
+          var(--color-100) 25%
         );
     }
 
-    .bar-col {
+    .chart-bar-wrap {
       flex: 1;
+      height: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-end;
-      height: 100%;
     }
 
-    .bar {
+    .chart-bar {
       width: 100%;
-      max-width: 52px;
-      background: var(--c-900); /* 900 on white: UI 3:1+ ✓ */
+      max-width: 60px;
       border-radius: 4px 4px 0 0;
-      transition: background 0.15s;
+      transition: opacity 0.15s;
     }
 
-    .bar:hover,
-    .bar:focus {
-      background: var(--c-700);
-      outline: none;
+    .chart-bar:hover {
+      opacity: 0.85;
     }
 
-    .bar:focus-visible {
-      outline: 3px solid var(--c-700);
-      outline-offset: 2px;
+    .chart-bar--primary {
+      background: var(--color-700);
+    }
+
+    .chart-bar--secondary {
+      background: var(--color-300);
     }
 
     .chart-labels {
       display: flex;
-      gap: 0.625rem;
+      gap: 0.75rem;
       padding-top: 0.5rem;
     }
 
@@ -363,134 +560,178 @@
       text-align: center;
       font-size: 0.6875rem;
       font-weight: 600;
-      color: var(--c-700); /* 5.20:1 on white ✓ */
+      color: var(--color-700);
       letter-spacing: 0.03em;
     }
 
-    /* Visually hidden accessible table behind chart */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0,0,0,0);
-      white-space: nowrap;
-      border: 0;
-    }
-
-    /* ── Table ────────────────────────────────────────────────────────────── */
-    .table-card {
-      background: var(--white);
-      border-radius: var(--radius-card);
-      border: 1px solid var(--c-300);
-      box-shadow: var(--shadow-card);
-      overflow: hidden;
-    }
-
-    .table-card__header {
-      padding: 1.25rem 1.5rem;
-      border-bottom: 1px solid var(--c-300);
+    /* ── Donut chart ────────────────────────────────────────────────────────── */
+    .donut-section {
+      padding: 1.5rem;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
+      gap: 2rem;
     }
 
-    .table-card__title {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--c-900); /* 16.25:1 ✓ */
+    .donut-visual {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: conic-gradient(
+        var(--color-700) 0deg 198deg,
+        var(--color-300) 198deg 306deg,
+        var(--success) 306deg 349deg,
+        var(--warning) 349deg 360deg
+      );
+      position: relative;
     }
 
-    .table-card__caption {
+    .donut-visual::after {
+      content: "";
+      position: absolute;
+      inset: 22px;
+      background: var(--white);
+      border-radius: 50%;
+    }
+
+    .donut-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .donut-legend__item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
       font-size: 0.8125rem;
-      color: var(--c-700); /* 5.20:1 ✓ */
+      font-weight: 600;
+      color: var(--color-900);
     }
 
-    /* 900 on white: 16.25:1 | 800 on white: 10.99:1 | 700 on white: 5.20:1 */
+    .donut-legend__dot {
+      width: 0.625rem;
+      height: 0.625rem;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .donut-legend__dot--web {
+      background: var(--color-700);
+    }
+
+    .donut-legend__dot--mobile {
+      background: var(--color-300);
+    }
+
+    .donut-legend__dot--api {
+      background: var(--success);
+    }
+
+    .donut-legend__dot--other {
+      background: var(--warning);
+    }
+
+    /* ── Table ──────────────────────────────────────────────────────────────── */
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
     }
 
+    caption {
+      text-align: left;
+      padding: 0.75rem 1.5rem 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--color-800);
+    }
+
     thead th {
-      padding: 0.625rem 1.5rem;
+      padding: 0.625rem 1.25rem;
       text-align: left;
       font-size: 0.6875rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--c-800); /* 10.99:1 on white ✓ */
-      background: var(--c-100);
-      border-bottom: 1px solid var(--c-300);
+      letter-spacing: 0.07em;
+      color: var(--color-800);
+      background: var(--color-100);
+      border-bottom: 2px solid var(--color-300);
+      white-space: nowrap;
     }
 
-    thead th:last-child { text-align: right; }
+    thead th:last-child {
+      text-align: right;
+    }
 
     tbody tr {
-      border-bottom: 1px solid var(--c-100);
+      border-bottom: 1px solid var(--color-100);
       transition: background 0.1s;
     }
 
-    tbody tr:last-child { border-bottom: none; }
+    tbody tr:last-child {
+      border-bottom: none;
+    }
 
-    tbody tr:hover { background: var(--c-100); }
+    tbody tr:hover {
+      background: var(--color-100);
+    }
 
     tbody td {
-      padding: 0.875rem 1.5rem;
-      font-size: 0.875rem;
-      color: var(--c-900); /* 16.25:1 on white ✓ */
+      padding: 0.875rem 1.25rem;
+      font-size: 0.8125rem;
+      color: var(--color-900);
       vertical-align: middle;
     }
 
-    tbody td:last-child { text-align: right; }
+    tbody td:last-child {
+      text-align: right;
+    }
 
     .td-id {
-      font-family: "SF Mono", "Fira Code", "Cascadia Code", Consolas, monospace;
-      font-size: 0.8125rem;
-      color: var(--c-800); /* 10.99:1 ✓ */
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--color-800);
       font-weight: 600;
     }
 
     .td-user strong {
       display: block;
       font-weight: 600;
-      color: var(--c-900); /* 16.25:1 ✓ */
+      color: var(--color-900);
     }
 
     .td-user span {
-      font-size: 0.75rem;
-      color: var(--c-700); /* 5.20:1 ✓ */
-    }
-
-    .td-type {
-      color: var(--c-800); /* 10.99:1 ✓ */
+      font-size: 0.6875rem;
+      color: var(--color-700);
     }
 
     .td-amount {
       font-weight: 700;
       font-variant-numeric: tabular-nums;
-      color: var(--c-900); /* 16.25:1 ✓ */
+      color: var(--color-900);
     }
 
     .td-date {
-      color: var(--c-700); /* 5.20:1 ✓ */
-      font-size: 0.8125rem;
+      color: var(--color-700);
+      font-size: 0.75rem;
+      font-variant-numeric: tabular-nums;
     }
 
-    /* Status badges */
+    /* ── Status badges ──────────────────────────────────────────────────────── */
     .badge {
       display: inline-flex;
       align-items: center;
       gap: 0.3125rem;
       padding: 0.25rem 0.625rem;
-      border-radius: 9999px;
+      border-radius: var(--radius-full);
       font-size: 0.6875rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
       white-space: nowrap;
     }
 
@@ -501,38 +742,113 @@
       flex-shrink: 0;
     }
 
-    /* white on 900: 16.25:1 ✓ */
     .badge--completed {
-      background: var(--c-900);
-      color: var(--white);
+      background: var(--success-bg);
+      color: var(--success);
     }
-    .badge--completed .badge-dot { background: var(--c-300); }
 
-    /* white on 800: 10.99:1 ✓ */
+    .badge--completed .badge-dot {
+      background: var(--success);
+    }
+
     .badge--processing {
-      background: var(--c-800);
-      color: var(--white);
+      background: #e8f0fe;
+      color: var(--color-700);
     }
-    .badge--processing .badge-dot { background: var(--c-300); }
 
-    /* white on 700: 5.20:1 ✓ */
+    .badge--processing .badge-dot {
+      background: var(--color-700);
+    }
+
     .badge--pending {
-      background: var(--c-700);
-      color: var(--white);
-    }
-    .badge--pending .badge-dot { background: var(--c-300); }
-
-    /* ── Responsive ───────────────────────────────────────────────────────── */
-    @media (max-width: 680px) {
-      .page { padding: 1.25rem; }
-      .site-header { padding: 1rem 1.25rem; }
-      .stat-grid { grid-template-columns: 1fr 1fr; }
-      thead th:nth-child(3),
-      tbody td:nth-child(3) { display: none; }
+      background: var(--warning-bg);
+      color: var(--warning);
     }
 
-    @media (max-width: 400px) {
-      .stat-grid { grid-template-columns: 1fr; }
+    .badge--pending .badge-dot {
+      background: var(--warning);
+    }
+
+    .badge--cancelled {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    .badge--cancelled .badge-dot {
+      background: var(--danger);
+    }
+
+    /* ── Screen reader only ─────────────────────────────────────────────────── */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* ── Responsive ─────────────────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .sidebar {
+        width: 200px;
+      }
+
+      :root {
+        --sidebar-width: 200px;
+      }
+
+      .grid-2col {
+        grid-template-columns: 1fr;
+      }
+
+      .donut-section {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .sidebar {
+        display: none;
+      }
+
+      :root {
+        --sidebar-width: 0;
+      }
+
+      .page {
+        padding: 1.25rem;
+      }
+
+      .stat-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .topbar {
+        padding: 0.875rem 1.25rem;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .stat-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar__right {
+        display: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .stat-tile,
+      .chart-bar,
+      .sidebar__nav a {
+        transition: background 0.15s, box-shadow 0.2s, color 0.15s, opacity 0.15s;
+      }
     }
   </style>
 </head>
@@ -540,245 +856,319 @@
 
   <a href="#main-content" class="skip-link">Skip to main content</a>
 
-  <!-- ── Header ─────────────────────────────────────────────────────────── -->
-  <header class="site-header" role="banner">
-    <div class="site-header__logo">
-      <div class="logo-mark" aria-hidden="true">
-        <svg viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
-          <rect x="1" y="9" width="4" height="8" rx="1"/>
-          <rect x="7" y="5" width="4" height="12" rx="1"/>
-          <rect x="13" y="1" width="4" height="16" rx="1"/>
+  <!-- ── Sidebar ───────────────────────────────────────────────────────────── -->
+  <aside class="sidebar" aria-label="Main navigation">
+    <div class="sidebar__brand">
+      <div class="sidebar__brand-icon" aria-hidden="true">
+        <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 2a5 5 0 0 1 5 5v1.5a3 3 0 0 1 3 3v6a.5.5 0 0 1-.5.5h-15a.5.5 0 0 1-.5-.5v-6a3 3 0 0 1 3-3V7a5 5 0 0 1 5-5Zm3 13a3 3 0 1 0-6 0h6Z"/>
         </svg>
       </div>
-      <h1>Insights</h1>
+      <h1>Meridian</h1>
     </div>
-    <div class="site-header__meta" aria-label="Report period">
-      <strong>June 2026</strong>
-      <p>Updated Jun 14, 2026</p>
-    </div>
-  </header>
 
-  <!-- ── Main ───────────────────────────────────────────────────────────── -->
-  <main id="main-content" class="page">
+    <nav class="sidebar__nav" aria-label="Primary">
+      <a href="#" aria-current="page">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+        Dashboard
+      </a>
+      <a href="#">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1a1 1 0 0 1 1 1v5h5a1 1 0 1 1 0 2H9v5a1 1 0 1 1-2 0V9H2a1 1 0 0 1 0-2h5V2a1 1 0 0 1 1-1Z"/></svg>
+        Analytics
+      </a>
+      <a href="#">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 5a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-5 9.5a6.5 6.5 0 0 1 13 0 .5.5 0 0 1-.5.5h-12a.5.5 0 0 1-.5-.5Z"/></svg>
+        Users
+      </a>
+      <a href="#">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2h4l1 3h7a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h1Z"/></svg>
+        Orders
+      </a>
+      <a href="#">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l3 2" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Settings
+      </a>
+    </nav>
 
-    <!-- ── Stat Tiles ─────────────────────────────────────────────────── -->
-    <section aria-labelledby="stats-heading">
-      <h2 id="stats-heading" class="section-label">Key Metrics</h2>
-
-      <div class="stat-grid">
-
-        <!-- Revenue -->
-        <article class="stat-tile" aria-label="Total Revenue">
-          <div class="stat-tile__icon" aria-hidden="true">
-            <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-              <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1Zm.75 10.25V12a.75.75 0 0 1-1.5 0v-.77A3.25 3.25 0 0 1 5 8.5a.75.75 0 0 1 1.5 0c0 .966.784 1.75 1.75 1.75h.25a1.25 1.25 0 0 0 0-2.5h-.5A2.75 2.75 0 0 1 8 2a2.75 2.75 0 0 1 0 5.5.25.25 0 0 0 0 .5h.5a2.75 2.75 0 0 1 .25 5.25Z"/>
-            </svg>
-          </div>
-          <p class="stat-tile__label">Total Revenue</p>
-          <p class="stat-tile__value" aria-label="84,250 dollars">$84,250</p>
-          <p class="stat-tile__change">
-            <span class="stat-tile__badge stat-tile__badge--up" aria-label="Up 12.4 percent">
-              ↑ 12.4%
-            </span>
-            vs last month
-          </p>
-        </article>
-
-        <!-- Active Users -->
-        <article class="stat-tile" aria-label="Active Users">
-          <div class="stat-tile__icon" aria-hidden="true">
-            <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-              <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5 5.5a5 5 0 0 1 10 0 .5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5Z"/>
-            </svg>
-          </div>
-          <p class="stat-tile__label">Active Users</p>
-          <p class="stat-tile__value">14,892</p>
-          <p class="stat-tile__change">
-            <span class="stat-tile__badge stat-tile__badge--up" aria-label="Up 8.1 percent">
-              ↑ 8.1%
-            </span>
-            vs last month
-          </p>
-        </article>
-
-        <!-- Conversion Rate -->
-        <article class="stat-tile" aria-label="Conversion Rate">
-          <div class="stat-tile__icon" aria-hidden="true">
-            <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-              <path d="M11.354 4.646a.5.5 0 0 0-.707 0L4.293 11a.5.5 0 1 0 .707.707l6.354-6.354a.5.5 0 0 0 0-.707ZM5 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm9 5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"/>
-            </svg>
-          </div>
-          <p class="stat-tile__label">Conversion Rate</p>
-          <p class="stat-tile__value">3.68%</p>
-          <p class="stat-tile__change">
-            <span class="stat-tile__badge stat-tile__badge--down" aria-label="Down 0.3 percent">
-              ↓ 0.3%
-            </span>
-            vs last month
-          </p>
-        </article>
-
-        <!-- Avg Session -->
-        <article class="stat-tile" aria-label="Average Session Duration">
-          <div class="stat-tile__icon" aria-hidden="true">
-            <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-              <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1Zm.5 4v3.25l2.25 2.25a.5.5 0 0 1-.707.707l-2.5-2.5A.5.5 0 0 1 7.5 8.5V5a.5.5 0 0 1 1 0Z"/>
-            </svg>
-          </div>
-          <p class="stat-tile__label">Avg. Session</p>
-          <p class="stat-tile__value">4m 22s</p>
-          <p class="stat-tile__change">
-            <span class="stat-tile__badge stat-tile__badge--up" aria-label="Up 5.7 percent">
-              ↑ 5.7%
-            </span>
-            vs last month
-          </p>
-        </article>
-
+    <div class="sidebar__user">
+      <div class="sidebar__user-avatar" aria-hidden="true">CM</div>
+      <div class="sidebar__user-info">
+        <strong>Carlos Méndez</strong>
+        <span>Admin</span>
       </div>
-    </section>
+    </div>
+  </aside>
 
-    <!-- ── Bar Chart ─────────────────────────────────────────────────────── -->
-    <section aria-labelledby="chart-heading">
-      <div class="chart-card">
-        <div class="chart-card__header">
+  <!-- ── Main wrapper ──────────────────────────────────────────────────────── -->
+  <div class="main-wrapper">
+
+    <!-- Topbar -->
+    <header class="topbar" role="banner">
+      <div class="topbar__left">
+        <h2 class="topbar__title">Overview</h2>
+      </div>
+      <div class="topbar__right">
+        <span class="topbar__date">June 26, 2026</span>
+        <div class="topbar__actions">
+          <button class="btn btn--outline" type="button">
+            <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 3h16v2H0V3Zm0 4h16v2H0V7Zm0 4h16v2H0v-2Z" fill="currentColor"/></svg>
+            Export
+          </button>
+          <button class="btn btn--primary" type="button">
+            <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0a1 1 0 0 1 1 1v6h6a1 1 0 1 1 0 2H9v6a1 1 0 1 1-2 0V9H1a1 1 0 0 1 0-2h6V1a1 1 0 0 1 1-1Z" fill="currentColor"/></svg>
+            New Report
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── Main content ───────────────────────────────────────────────────── -->
+    <main id="main-content" class="page">
+
+      <!-- Key Metrics -->
+      <section aria-labelledby="metrics-heading">
+        <h2 id="metrics-heading" class="section-label">Key Metrics</h2>
+
+        <div class="stat-grid">
+
+          <article class="stat-tile" aria-label="Total Revenue: $84,250 — up 12.4 percent from last month">
+            <div class="stat-tile__header">
+              <div>
+                <p class="stat-tile__label">Total Revenue</p>
+                <p class="stat-tile__value">$84,250</p>
+              </div>
+              <div class="stat-tile__icon stat-tile__icon--revenue" aria-hidden="true">
+                <svg viewBox="0 0 16 16"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1Zm.75 10.25V12a.75.75 0 0 1-1.5 0v-.77A3.25 3.25 0 0 1 5 8.5a.75.75 0 0 1 1.5 0c0 .966.784 1.75 1.75 1.75h.25a1.25 1.25 0 0 0 0-2.5h-.5A2.75 2.75 0 0 1 8 2a2.75 2.75 0 0 1 0 5.5.25.25 0 0 0 0 .5h.5a2.75 2.75 0 0 1 .25 5.25Z"/></svg>
+              </div>
+            </div>
+            <p class="stat-tile__change">
+              <span class="stat-chip stat-chip--up" aria-label="Up 12.4 percent">↑ 12.4%</span>
+              vs last month
+            </p>
+          </article>
+
+          <article class="stat-tile" aria-label="Active Users: 14,892 — up 8.1 percent from last month">
+            <div class="stat-tile__header">
+              <div>
+                <p class="stat-tile__label">Active Users</p>
+                <p class="stat-tile__value">14,892</p>
+              </div>
+              <div class="stat-tile__icon stat-tile__icon--users" aria-hidden="true">
+                <svg viewBox="0 0 16 16"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5 5.5a5 5 0 0 1 10 0 .5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5Z"/></svg>
+              </div>
+            </div>
+            <p class="stat-tile__change">
+              <span class="stat-chip stat-chip--up" aria-label="Up 8.1 percent">↑ 8.1%</span>
+              vs last month
+            </p>
+          </article>
+
+          <article class="stat-tile" aria-label="Conversion Rate: 3.68 percent — down 0.3 percent from last month">
+            <div class="stat-tile__header">
+              <div>
+                <p class="stat-tile__label">Conversion Rate</p>
+                <p class="stat-tile__value">3.68%</p>
+              </div>
+              <div class="stat-tile__icon stat-tile__icon--conversion" aria-hidden="true">
+                <svg viewBox="0 0 16 16"><path d="M11.354 4.646a.5.5 0 0 0-.707 0L4.293 11a.5.5 0 1 0 .707.707l6.354-6.354a.5.5 0 0 0 0-.707ZM5 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm9 5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"/></svg>
+              </div>
+            </div>
+            <p class="stat-tile__change">
+              <span class="stat-chip stat-chip--down" aria-label="Down 0.3 percent">↓ 0.3%</span>
+              vs last month
+            </p>
+          </article>
+
+          <article class="stat-tile" aria-label="Average Session Duration: 4 minutes 22 seconds — up 5.7 percent from last month">
+            <div class="stat-tile__header">
+              <div>
+                <p class="stat-tile__label">Avg. Session</p>
+                <p class="stat-tile__value">4m 22s</p>
+              </div>
+              <div class="stat-tile__icon stat-tile__icon--sessions" aria-hidden="true">
+                <svg viewBox="0 0 16 16"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1Zm.5 4v3.25l2.25 2.25a.5.5 0 0 1-.707.707l-2.5-2.5A.5.5 0 0 1 7.5 8.5V5a.5.5 0 0 1 1 0Z"/></svg>
+              </div>
+            </div>
+            <p class="stat-tile__change">
+              <span class="stat-chip stat-chip--up" aria-label="Up 5.7 percent">↑ 5.7%</span>
+              vs last month
+            </p>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- Charts row -->
+      <div class="grid-2col">
+        <!-- Weekly Visitors Bar Chart -->
+        <section aria-labelledby="chart-heading" class="card">
+          <div class="card__header">
+            <div>
+              <h3 id="chart-heading" class="card__title">Weekly Visitors</h3>
+              <p class="card__subtitle">Unique sessions — past 7 days</p>
+            </div>
+          </div>
+
+          <table class="sr-only" aria-label="Weekly visitor data table">
+            <caption>Unique sessions per day for the past 7 days</caption>
+            <thead>
+              <tr><th scope="col">Day</th><th scope="col">Unique Sessions</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Monday</td><td>1,820</td></tr>
+              <tr><td>Tuesday</td><td>2,450</td></tr>
+              <tr><td>Wednesday</td><td>3,100</td></tr>
+              <tr><td>Thursday</td><td>2,780</td></tr>
+              <tr><td>Friday</td><td>3,540</td></tr>
+              <tr><td>Saturday</td><td>2,200</td></tr>
+              <tr><td>Sunday</td><td>1,960</td></tr>
+            </tbody>
+          </table>
+
+          <div class="chart-area" aria-hidden="true">
+            <div class="chart-bars">
+              <div class="chart-bar-wrap"><div class="chart-bar chart-bar--primary" style="height:51.4%;" title="Mon: 1,820"></div></div>
+              <div class="chart-bar-wrap"><div class="chart-bar chart-bar--primary" style="height:69.2%;" title="Tue: 2,450"></div></div>
+              <div class="chart-bar-wrap"><div class="chart-bar chart-bar--primary" style="height:87.6%;" title="Wed: 3,100"></div></div>
+              <div class="chart-bar-wrap"><div class="chart-bar chart-bar--primary" style="height:78.5%;" title="Thu: 2,780"></div></div>
+              <div class="chart-bar-wrap"><div class="chart-bar chart-bar--primary" style="height:100%;"  title="Fri: 3,540"></div></div>
+              <div class="chart-bar-wrap"><div class="chart-bar chart-bar--primary" style="height:62.1%;" title="Sat: 2,200"></div></div>
+              <div class="chart-bar-wrap"><div class="chart-bar chart-bar--primary" style="height:55.4%;" title="Sun: 1,960"></div></div>
+            </div>
+            <div class="chart-labels">
+              <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Traffic Sources Donut -->
+        <section aria-labelledby="traffic-heading" class="card">
+          <div class="card__header">
+            <div>
+              <h3 id="traffic-heading" class="card__title">Traffic Sources</h3>
+              <p class="card__subtitle">Distribution by channel</p>
+            </div>
+          </div>
+
+          <table class="sr-only" aria-label="Traffic sources data">
+            <caption>Traffic distribution by source channel</caption>
+            <thead>
+              <tr><th scope="col">Source</th><th scope="col">Percentage</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Web Direct</td><td>55%</td></tr>
+              <tr><td>Mobile App</td><td>30%</td></tr>
+              <tr><td>API</td><td>8%</td></tr>
+              <tr><td>Other</td><td>7%</td></tr>
+            </tbody>
+          </table>
+
+          <div class="donut-section" aria-hidden="true">
+            <div class="donut-visual"></div>
+            <div class="donut-legend">
+              <div class="donut-legend__item"><span class="donut-legend__dot donut-legend__dot--web"></span> Web Direct — 55%</div>
+              <div class="donut-legend__item"><span class="donut-legend__dot donut-legend__dot--mobile"></span> Mobile App — 30%</div>
+              <div class="donut-legend__item"><span class="donut-legend__dot donut-legend__dot--api"></span> API — 8%</div>
+              <div class="donut-legend__item"><span class="donut-legend__dot donut-legend__dot--other"></span> Other — 7%</div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Recent Activity Table -->
+      <section aria-labelledby="activity-heading" class="card">
+        <div class="card__header">
           <div>
-            <h2 id="chart-heading" class="chart-card__title">Weekly Visitors</h2>
-            <p class="chart-card__subtitle">Unique sessions — past 7 days</p>
-          </div>
-          <div class="chart-card__legend" aria-hidden="true">
-            <span class="legend-swatch"></span>
-            Unique sessions
+            <h3 id="activity-heading" class="card__title">Recent Transactions</h3>
+            <p class="card__subtitle">Latest 8 entries across all channels</p>
           </div>
         </div>
 
-        <!-- Screen-reader data table (accessible equivalent of the chart) -->
-        <table class="sr-only" aria-label="Weekly visitor data">
-          <caption>Unique sessions for each day over the past 7 days</caption>
-          <thead>
-            <tr>
-              <th scope="col">Day</th>
-              <th scope="col">Unique Sessions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>Monday</td><td>1,820</td></tr>
-            <tr><td>Tuesday</td><td>2,450</td></tr>
-            <tr><td>Wednesday</td><td>3,100</td></tr>
-            <tr><td>Thursday</td><td>2,780</td></tr>
-            <tr><td>Friday</td><td>3,540</td></tr>
-            <tr><td>Saturday</td><td>2,200</td></tr>
-            <tr><td>Sunday</td><td>1,960</td></tr>
-          </tbody>
-        </table>
-
-        <!-- Visual bar chart (aria-hidden — data is in the sr-only table above) -->
-        <div class="chart-body" aria-hidden="true">
-          <div class="chart-bars-area">
-            <!-- Heights = value / max(3540) × 100% -->
-            <div class="bar-col"><div class="bar" style="height:51.4%;" title="Mon: 1,820"></div></div>
-            <div class="bar-col"><div class="bar" style="height:69.2%;" title="Tue: 2,450"></div></div>
-            <div class="bar-col"><div class="bar" style="height:87.6%;" title="Wed: 3,100"></div></div>
-            <div class="bar-col"><div class="bar" style="height:78.5%;" title="Thu: 2,780"></div></div>
-            <div class="bar-col"><div class="bar" style="height:100%;"  title="Fri: 3,540"></div></div>
-            <div class="bar-col"><div class="bar" style="height:62.1%;" title="Sat: 2,200"></div></div>
-            <div class="bar-col"><div class="bar" style="height:55.4%;" title="Sun: 1,960"></div></div>
-          </div>
-          <div class="chart-labels">
-            <span>Mon</span>
-            <span>Tue</span>
-            <span>Wed</span>
-            <span>Thu</span>
-            <span>Fri</span>
-            <span>Sat</span>
-            <span>Sun</span>
-          </div>
+        <div class="table-wrapper">
+          <table>
+            <caption>Recent transaction records — 8 most recent entries</caption>
+            <thead>
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Customer</th>
+                <th scope="col">Type</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Status</th>
+                <th scope="col">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="td-id">#TXN-01048</td>
+                <td class="td-user"><strong>Sarah M.</strong><span>sarah@example.com</span></td>
+                <td>Subscription</td>
+                <td class="td-amount">$49.00</td>
+                <td><span class="badge badge--completed"><span class="badge-dot" aria-hidden="true"></span>Completed</span></td>
+                <td class="td-date">Jun 26, 2026</td>
+              </tr>
+              <tr>
+                <td class="td-id">#TXN-01047</td>
+                <td class="td-user"><strong>James K.</strong><span>james@example.com</span></td>
+                <td>One-time</td>
+                <td class="td-amount">$120.00</td>
+                <td><span class="badge badge--processing"><span class="badge-dot" aria-hidden="true"></span>Processing</span></td>
+                <td class="td-date">Jun 26, 2026</td>
+              </tr>
+              <tr>
+                <td class="td-id">#TXN-01046</td>
+                <td class="td-user"><strong>Leila R.</strong><span>leila@example.com</span></td>
+                <td>Subscription</td>
+                <td class="td-amount">$49.00</td>
+                <td><span class="badge badge--completed"><span class="badge-dot" aria-hidden="true"></span>Completed</span></td>
+                <td class="td-date">Jun 25, 2026</td>
+              </tr>
+              <tr>
+                <td class="td-id">#TXN-01045</td>
+                <td class="td-user"><strong>Tomás V.</strong><span>tomas@example.com</span></td>
+                <td>Upgrade</td>
+                <td class="td-amount">$199.00</td>
+                <td><span class="badge badge--pending"><span class="badge-dot" aria-hidden="true"></span>Pending</span></td>
+                <td class="td-date">Jun 25, 2026</td>
+              </tr>
+              <tr>
+                <td class="td-id">#TXN-01044</td>
+                <td class="td-user"><strong>Aiko N.</strong><span>aiko@example.com</span></td>
+                <td>One-time</td>
+                <td class="td-amount">$75.00</td>
+                <td><span class="badge badge--completed"><span class="badge-dot" aria-hidden="true"></span>Completed</span></td>
+                <td class="td-date">Jun 24, 2026</td>
+              </tr>
+              <tr>
+                <td class="td-id">#TXN-01043</td>
+                <td class="td-user"><strong>Omar F.</strong><span>omar@example.com</span></td>
+                <td>Subscription</td>
+                <td class="td-amount">$49.00</td>
+                <td><span class="badge badge--cancelled"><span class="badge-dot" aria-hidden="true"></span>Cancelled</span></td>
+                <td class="td-date">Jun 24, 2026</td>
+              </tr>
+              <tr>
+                <td class="td-id">#TXN-01042</td>
+                <td class="td-user"><strong>Priya S.</strong><span>priya@example.com</span></td>
+                <td>Upgrade</td>
+                <td class="td-amount">$199.00</td>
+                <td><span class="badge badge--completed"><span class="badge-dot" aria-hidden="true"></span>Completed</span></td>
+                <td class="td-date">Jun 23, 2026</td>
+              </tr>
+              <tr>
+                <td class="td-id">#TXN-01041</td>
+                <td class="td-user"><strong>Chen L.</strong><span>chen@example.com</span></td>
+                <td>One-time</td>
+                <td class="td-amount">$89.00</td>
+                <td><span class="badge badge--pending"><span class="badge-dot" aria-hidden="true"></span>Pending</span></td>
+                <td class="td-date">Jun 23, 2026</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+      </section>
 
-      </div>
-    </section>
-
-    <!-- ── Recent Activity Table ──────────────────────────────────────────── -->
-    <section aria-labelledby="activity-heading">
-      <div class="table-card">
-        <div class="table-card__header">
-          <h2 id="activity-heading" class="table-card__title">Recent Activity</h2>
-          <p class="table-card__caption">5 most recent transactions</p>
-        </div>
-
-        <table aria-labelledby="activity-heading">
-          <thead>
-            <tr>
-              <th scope="col">ID</th>
-              <th scope="col">User</th>
-              <th scope="col">Type</th>
-              <th scope="col">Amount</th>
-              <th scope="col">Status</th>
-              <th scope="col">Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="td-id">#TXN-00481</td>
-              <td class="td-user">
-                <strong>Sarah M.</strong>
-                <span>sarah@example.com</span>
-              </td>
-              <td class="td-type">Subscription</td>
-              <td class="td-amount">$49.00</td>
-              <td><span class="badge badge--completed"><span class="badge-dot" aria-hidden="true"></span>Completed</span></td>
-              <td class="td-date">Jun 14, 2026</td>
-            </tr>
-            <tr>
-              <td class="td-id">#TXN-00480</td>
-              <td class="td-user">
-                <strong>James K.</strong>
-                <span>james@example.com</span>
-              </td>
-              <td class="td-type">One-time</td>
-              <td class="td-amount">$120.00</td>
-              <td><span class="badge badge--processing"><span class="badge-dot" aria-hidden="true"></span>Processing</span></td>
-              <td class="td-date">Jun 13, 2026</td>
-            </tr>
-            <tr>
-              <td class="td-id">#TXN-00479</td>
-              <td class="td-user">
-                <strong>Leila R.</strong>
-                <span>leila@example.com</span>
-              </td>
-              <td class="td-type">Subscription</td>
-              <td class="td-amount">$49.00</td>
-              <td><span class="badge badge--completed"><span class="badge-dot" aria-hidden="true"></span>Completed</span></td>
-              <td class="td-date">Jun 13, 2026</td>
-            </tr>
-            <tr>
-              <td class="td-id">#TXN-00478</td>
-              <td class="td-user">
-                <strong>Tomás V.</strong>
-                <span>tomas@example.com</span>
-              </td>
-              <td class="td-type">Upgrade</td>
-              <td class="td-amount">$199.00</td>
-              <td><span class="badge badge--pending"><span class="badge-dot" aria-hidden="true"></span>Pending</span></td>
-              <td class="td-date">Jun 12, 2026</td>
-            </tr>
-            <tr>
-              <td class="td-id">#TXN-00477</td>
-              <td class="td-user">
-                <strong>Aiko N.</strong>
-                <span>aiko@example.com</span>
-              </td>
-              <td class="td-type">One-time</td>
-              <td class="td-amount">$75.00</td>
-              <td><span class="badge badge--completed"><span class="badge-dot" aria-hidden="true"></span>Completed</span></td>
-              <td class="td-date">Jun 12, 2026</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-  </main>
+    </main>
+  </div>
 
 </body>
 </html>

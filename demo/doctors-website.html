@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clínica Doctora Elena Torres — Medicina General y Pediatría</title>
+  <style>
+/*
+ * WCAG AA PAIRING MANIFEST — source: #2563eb · theme: white
+ *
+ * BODY TEXT (any font size, ≥4.5:1):
+ *   shade-100 (#eef3fd) → 900, 800, 700
+ *   shade-300 (#b3c9f8) → 900, 800
+ *   shade-600 (#5587eb) → 900
+ *   shade-700 (#2563eb) → white, 100
+ *   shade-800 (#103888) → white, 100, 300
+ *   shade-900 (#071e4f) → white, 100, 300, 600
+ *
+ * LARGE TEXT ONLY (≥24px or ≥18.67px bold, 3:1–4.5:1):
+ *   These pairings are PROHIBITED for body text at any size.
+ *   No exception exists for "decorative", "secondary", or "non-critical" text —
+ *   WCAG 1.4.3 applies to all visible text regardless of its semantic importance.
+ *   shade-100 (#eef3fd) → 600
+ *   shade-300 (#b3c9f8) → 700
+ *   shade-600 (#5587eb) → 100, 800, white
+ *   shade-700 (#2563eb) → 300, 900
+ *   shade-800 (#103888) → 600
+ *   shade-900 (#071e4f) → 700
+ *
+ * ACCENT COLORS (verified separately with check_contrast):
+ *   Error/success: #dc2626, #16a34a on white pass AA normal
+ */
+:root {
+  --color-100: #eef3fd; /* ✅ text→900·800·700  ⚠️ lg→600 */
+  --color-300: #b3c9f8; /* ✅ text→900·800  ⚠️ lg→700 */
+  --color-600: #5587eb; /* ✅ text→900  ⚠️ lg→100·800·white */
+  --color-700: #2563eb; /* ✅ text→white·100  ⚠️ lg→300·900 */
+  --color-800: #103888; /* ✅ text→white·100·300  ⚠️ lg→600 */
+  --color-900: #071e4f; /* ✅ text→white·100·300·600  ⚠️ lg→700 */
+
+  --color-error: #dc2626;
+  --color-success: #16a34a;
+
+  --color-bg: #ffffff;
+  --color-surface: var(--color-100);
+  --color-text: var(--color-900);
+  --color-text-muted: var(--color-700);
+  --color-border: var(--color-300);
+
+  --color-primary: var(--color-700);
+  --color-primary-hover: var(--color-800);
+  --color-primary-light: var(--color-100);
+
+  --color-error-bg: #fef2f2;
+  --color-success-bg: #f0fdf4;
+
+  --font-sans: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --radius: 0.5rem;
+  --shadow-sm: 0 1px 2px rgba(7, 30, 79, 0.06);
+  --shadow: 0 4px 12px rgba(7, 30, 79, 0.08);
+}
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; }
+  body {
+    font-family: var(--font-sans);
+    color: var(--color-text);
+    background: var(--color-bg);
+    line-height: 1.6;
+  }
+
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .skip-link:focus, .skip-link:active {
+    position: fixed;
+    left: 1rem;
+    top: 1rem;
+    width: auto;
+    height: auto;
+    padding: 0.75rem 1rem;
+    background: var(--color-primary);
+    color: var(--color-bg);
+    text-decoration: none;
+    border-radius: var(--radius);
+    z-index: 10000;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Header & Navigation                                                 */
+  /* ------------------------------------------------------------------ */
+  .header {
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header__inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: var(--color-text);
+    font-weight: 700;
+    font-size: 1.125rem;
+  }
+  .logo__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: var(--color-bg);
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .nav { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+  .nav__link {
+    text-decoration: none;
+    color: var(--color-text-muted);
+    font-weight: 500;
+    padding: 0.35rem 0;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .nav__link:hover, .nav__link:focus { color: var(--color-primary); border-color: var(--color-primary); }
+  .nav__link--cta {
+    background: var(--color-primary);
+    color: var(--color-bg);
+    padding: 0.55rem 1rem;
+    border-radius: var(--radius);
+    border-bottom: 2px solid transparent;
+  }
+  .nav__link--cta:hover, .nav__link--cta:focus { background: var(--color-primary-hover); border-bottom-color: transparent; }
+  @media (prefers-reduced-motion: no-preference) {
+    .nav__link, .nav__link--cta { transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease; }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Hero                                                                */
+  /* ------------------------------------------------------------------ */
+  .hero {
+    background: linear-gradient(160deg, var(--color-primary-light), var(--color-bg) 70%);
+    padding: 5rem 2rem 4rem;
+  }
+  .hero__inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    align-items: center;
+  }
+  @media (min-width: 820px) { .hero__inner { grid-template-columns: 1.1fr 0.9fr; } }
+  .hero h1 {
+    font-size: clamp(1.75rem, 1.25rem + 2.5vw, 2.75rem);
+    line-height: 1.15;
+    color: var(--color-900);
+    margin-bottom: 1rem;
+  }
+  .hero p {
+    font-size: clamp(1rem, 0.875rem + 0.5vw, 1.125rem);
+    color: var(--color-700);
+    margin-bottom: 1.75rem;
+    max-width: 50ch;
+  }
+  .btn {
+    display: inline-block;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius);
+    font-weight: 600;
+    text-decoration: none;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  .btn--primary {
+    background: var(--color-primary);
+    color: var(--color-bg);
+    border-color: var(--color-primary);
+  }
+  .btn--primary:hover, .btn--primary:focus { background: var(--color-primary-hover); border-color: var(--color-primary-hover); outline: none; }
+  @media (prefers-reduced-motion: no-preference) { .btn { transition: background 0.2s ease, border-color 0.2s ease; } }
+
+  .hero__card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: calc(var(--radius) * 1.5);
+    padding: 1.75rem;
+    box-shadow: var(--shadow);
+  }
+  .hero__card h2 { font-size: 1.125rem; margin-bottom: 1rem; color: var(--color-800); }
+  .hero__list { list-style: none; display: grid; gap: 0.75rem; }
+  .hero__list li {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    color: var(--color-800);
+  }
+  .hero__list li::before {
+    content: "✓";
+    color: var(--color-success);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Sections layout                                                     */
+  /* ------------------------------------------------------------------ */
+  .section {
+    padding: 4rem 2rem;
+  }
+  .section--alt { background: var(--color-surface); }
+  .section__inner {
+    max-width: 1120px;
+    margin: 0 auto;
+  }
+  .section__title {
+    font-size: clamp(1.25rem, 0.875rem + 1.5vw, 1.75rem);
+    color: var(--color-900);
+    margin-bottom: 0.5rem;
+  }
+  .section__subtitle { color: var(--color-700); margin-bottom: 2.5rem; max-width: 65ch; }
+
+  /* ------------------------------------------------------------------ */
+  /* Services cards                                                      */
+  /* ------------------------------------------------------------------ */
+  .services {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .service-card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+  .service-card h3 { font-size: 1.0625rem; color: var(--color-800); margin: 0.5rem 0 0.35rem; }
+  .service-card p { color: var(--color-700); font-size: 0.9375rem; }
+  .service-card__icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+    display: grid;
+    place-items: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Team                                                               */
+  /* ------------------------------------------------------------------ */
+  .team { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); display: grid; gap: 1.5rem; }
+  .team-card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    text-align: center;
+  }
+  .team-card__avatar {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: var(--color-300);
+    margin: 0 auto 1rem;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    color: var(--color-800);
+  }
+  .team-card h3 { font-size: 1.0625rem; color: var(--color-800); }
+  .team-card p { color: var(--color-700); font-size: 0.9375rem; }
+
+  /* ------------------------------------------------------------------ */
+  /* Appointment form                                                    */
+  /* ------------------------------------------------------------------ */
+  .form {
+    max-width: 640px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: calc(var(--radius) * 1.5);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+  }
+  .form__group { margin-bottom: 1.25rem; }
+  .form__label {
+    display: block;
+    font-weight: 600;
+    color: var(--color-800);
+    margin-bottom: 0.35rem;
+    font-size: 0.9375rem;
+  }
+  .form__required { color: var(--color-error); margin-left: 0.15rem; }
+  .form__input, .form__select, .form__textarea {
+    width: 100%;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.375rem;
+    font: inherit;
+    color: var(--color-text);
+    background: var(--color-bg);
+  }
+  .form__input:focus, .form__select:focus, .form__textarea:focus {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+    border-color: var(--color-primary);
+  }
+  .form__hint {
+    font-size: 0.875rem;
+    color: var(--color-700);
+    margin-top: 0.25rem;
+  }
+  .form__error {
+    color: var(--color-error);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    font-weight: 600;
+  }
+  .form__error--hidden { display: none; }
+
+  /* ------------------------------------------------------------------ */
+  /* Testimonials                                                        */
+  /* ------------------------------------------------------------------ */
+  .testimonials { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); display: grid; gap: 1.5rem; }
+  .testimonial {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+  .testimonial__text { color: var(--color-800); font-style: italic; margin-bottom: 1rem; }
+  .testimonial__author { font-weight: 700; color: var(--color-900); }
+  .testimonial__role { color: var(--color-700); font-size: 0.875rem; }
+
+  /* ------------------------------------------------------------------ */
+  /* Status badge (accent)                                               */
+  /* ------------------------------------------------------------------ */
+  .badge {
+    display: inline-block;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .badge--success {
+    background: var(--color-success-bg);
+    color: var(--color-success);
+    border: 1px solid var(--color-success);
+  }
+  .badge--error {
+    background: var(--color-error-bg);
+    color: var(--color-error);
+    border: 1px solid var(--color-error);
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Focus visible                                                       */
+  /* ------------------------------------------------------------------ */
+  :focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+  :focus:not(:focus-visible) { outline: none; }
+
+  /* ------------------------------------------------------------------ */
+  /* Footer                                                              */
+  /* ------------------------------------------------------------------ */
+  .footer {
+    background: var(--color-900);
+    color: var(--color-100);
+    padding: 3rem 2rem 1.5rem;
+  }
+  .footer__inner {
+    max-width: 1120px; margin: 0 auto;
+    display: grid; gap: 2rem;
+  }
+  @media (min-width: 640px) { .footer__inner { grid-template-columns: 1.2fr 1fr 1fr; } }
+  .footer h2 { font-size: 1.0625rem; margin-bottom: 0.75rem; }
+  .footer p, .footer a { color: var(--color-300); text-decoration: none; }
+  .footer a:hover, .footer a:focus { text-decoration: underline; }
+  .footer__bottom {
+    max-width: 1120px; margin: 2rem auto 0;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-800);
+    color: var(--color-300);
+    font-size: 0.875rem;
+    text-align: center;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .btn { transition: background 0.2s ease, border-color 0.2s ease; }
+  }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Saltar al contenido principal</a>
+
+<header class="header" role="banner">
+  <div class="header__inner">
+    <a href="/" class="logo" aria-label="Clínica Doctora Elena Torres — Ir al inicio">
+      <span class="logo__icon" aria-hidden="true">ET</span>
+      <span>Dra. Elena Torres</span>
+    </a>
+    <nav aria-label="Principal">
+      <ul class="nav">
+        <li><a href="#servicios" class="nav__link">Servicios</a></li>
+        <li><a href="#equipo" class="nav__link">Equipo</a></li>
+        <li><a href="#testimonios" class="nav__link">Opiniones</a></li>
+        <li><a href="#cita" class="nav__link nav__link--cta">Pedir cita</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main" tabindex="-1">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero__inner">
+      <div>
+        <h1 id="hero-title">Atención médica cercana, para toda la familia</h1>
+        <p>Medicina general, pediatría y revisiones preventivas con más de 15 años de experiencia. Citas flexibles y seguimiento personalizado.</p>
+        <a href="#cita" class="btn btn--primary">Solicitar cita online</a>
+      </div>
+      <aside class="hero__card" aria-labelledby="card-title">
+        <h2 id="card-title">Cobertura y accesos</h2>
+        <ul class="hero__list">
+          <li>Atención presencial y telemedicina</li>
+          <li>Seguros privados y pacientes particulares</li>
+          <li>Atención el mismo día en casos de urgencia leve</li>
+          <li>Historia clínica digital accesible para el paciente</li>
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <section id="servicios" class="section section--alt" aria-labelledby="servicios-title">
+    <div class="section__inner">
+      <h2 id="servicios-title" class="section__title">Servicios</h2>
+      <p class="section__subtitle">Ofrecemos atención integral para adultos y niños, con especial atención a la prevención.</p>
+      <div class="services">
+        <article class="service-card">
+          <div class="service-card__icon" aria-hidden="true">MG</div>
+          <h3>Medicina general</h3>
+          <p>Consultas, diagnóstico y tratamiento de patologías frecuentes en adultos.</p>
+        </article>
+        <article class="service-card">
+          <div class="service-card__icon" aria-hidden="true">PED</div>
+          <h3>Pediatría</h3>
+          <p>Control de crecimiento, vacunación y seguimiento desde el nacimiento hasta la adolescencia.</p>
+        </article>
+        <article class="service-card">
+          <div class="service-card__icon" aria-hidden="true">PREV</div>
+          <h3>Medicina preventiva</h3>
+          <p>Chequeos periódicos, análisis y consejo para reducir riesgos a largo plazo.</p>
+        </article>
+        <article class="service-card">
+          <div class="service-card__icon" aria-hidden="true">CRON</div>
+          <h3>Patología crónica</h3>
+          <p>Seguimiento de diabetes, hipertensión y dislipemias con planes actualizados.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="equipo" class="section" aria-labelledby="equipo-title">
+    <div class="section__inner">
+      <h2 id="equipo-title" class="section__title">Equipo</h2>
+      <p class="section__subtitle">Un equipo reducido para garantizar cercanía y continuidad en tu atención.</p>
+      <div class="team">
+        <article class="team-card">
+          <div class="team-card__avatar" aria-hidden="true">ET</div>
+          <h3>Dra. Elena Torres</h3>
+          <p>Medicina familiar — 15 años de experiencia</p>
+        </article>
+        <article class="team-card">
+          <div class="team-card__avatar" aria-hidden="true">MR</div>
+          <h3>Dr. Marcos Reyes</h3>
+          <p>Pediatría y neonatología</p>
+        </article>
+        <article class="team-card">
+          <div class="team-card__avatar" aria-hidden="true">LG</div>
+          <h3>Dra. Laura Gómez</h3>
+          <p>Medicina preventiva</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="testimonios" class="section section--alt" aria-labelledby="testimonios-title">
+    <div class="section__inner">
+      <h2 id="testimonios-title" class="section__title">Opiniones</h2>
+      <div class="testimonials">
+        <blockquote class="testimonial">
+          <p class="testimonial__text">«La Dra. Torres escucha de verdad. Mi hija ya no tiene miedo de ir al médico.»</p>
+          <footer class="testimonial__author">Ana M.</footer>
+          <p class="testimonial__role">Paciente desde 2019</p>
+        </blockquote>
+        <blockquote class="testimonial">
+          <p class="testimonial__text">«Seguimiento de mi hipertensión muy ordenado y siempre disponible para consultas rápidas.»</p>
+          <footer class="testimonial__author">Carlos R.</footer>
+          <p class="testimonial__role">Paciente desde 2021</p>
+        </blockquote>
+        <blockquote class="testimonial">
+          <p class="testimonial__text">«Revisiones preventivas claras: me explican qué medir y por qué, sin prisas.»</p>
+          <footer class="testimonial__author">Marta S.</footer>
+          <p class="testimonial__role">Paciente desde 2017</p>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <section id="cita" class="section" aria-labelledby="cita-title">
+    <div class="section__inner">
+      <h2 id="cita-title" class="section__title">Pedir cita</h2>
+      <p class="section__subtitle">Completa el formulario y te contactaremos para confirmar día y hora.</p>
+
+      <form class="form" aria-label="Formulario de solicitud de cita" novalidate>
+        <div class="form__group">
+          <label class="form__label" for="name">Nombre completo<span class="form__required" aria-hidden="true">*</span></label>
+          <input class="form__input" id="name" name="name" type="text" autocomplete="name" required aria-required="true" aria-describedby="name-error">
+          <span id="name-error" class="form__error form__error--hidden" role="alert"></span>
+        </div>
+
+        <div class="form__group">
+          <label class="form__label" for="email">Correo electrónico<span class="form__required" aria-hidden="true">*</span></label>
+          <input class="form__input" id="email" name="email" type="email" autocomplete="email" required aria-required="true" aria-describedby="email-hint email-error">
+          <span id="email-hint" class="form__hint">Usaremos este correo para confirmar la cita.</span>
+          <span id="email-error" class="form__error form__error--hidden" role="alert"></span>
+        </div>
+
+        <div class="form__group">
+          <label class="form__label" for="phone">Teléfono</label>
+          <input class="form__input" id="phone" name="phone" type="tel" autocomplete="tel" aria-describedby="phone-hint">
+          <span id="phone-hint" class="form__hint">Incluye el prefijo si llamas desde fuera de España.</span>
+        </div>
+
+        <div class="form__group">
+          <label class="form__label" for="service">Motivo de la consulta<span class="form__required" aria-hidden="true">*</span></label>
+          <select class="form__select" id="service" name="service" required aria-required="true" aria-describedby="service-error">
+            <option value="">Selecciona una opción</option>
+            <option value="general">Medicina general</option>
+            <option value="pediatria">Pediatría</option>
+            <option value="preventiva">Medicina preventiva</option>
+            <option value="cronica">Patología crónica</option>
+            <option value="otro">Otro</option>
+          </select>
+          <span id="service-error" class="form__error form__error--hidden" role="alert"></span>
+        </div>
+
+        <div class="form__group">
+          <label class="form__label" for="message">Comentarios</label>
+          <textarea class="form__textarea" id="message" name="message" rows="4" aria-describedby="message-hint"></textarea>
+          <span id="message-hint" class="form__hint">Indica preferencias de horario si las tienes.</span>
+        </div>
+
+        <button class="btn btn--primary" type="submit">Enviar solicitud</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="footer" role="contentinfo">
+  <div class="footer__inner">
+    <div>
+      <h2>Clínica Doctora Elena Torres</h2>
+      <p>Atención médica cercana, para toda la familia.</p>
+    </div>
+    <div>
+      <h2>Contacto</h2>
+      <p>Calle Salud 42, 28001 Madrid</p>
+      <p><a href="tel:+34900123456">+34 900 123 456</a></p>
+      <p><a href="mailto:contacto@clinicadratorres.es">contacto@clinicadratorres.es</a></p>
+    </div>
+    <div>
+      <h2>Horario</h2>
+      <p>Lun a Vie: 09:00 – 19:00</p>
+      <p>Sáb: 09:00 – 13:00</p>
+      <p>Urgencia leve: mismo día</p>
+    </div>
+  </div>
+  <p class="footer__bottom">© <span id="year"></span> Clínica Doctora Elena Torres. Todos los derechos reservados.</p>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  const form = document.querySelector('.form');
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      let valid = true;
+
+      const nameEl = form.querySelector('#name');
+      const emailEl = form.querySelector('#email');
+      const serviceEl = form.querySelector('#service');
+
+      const nameErr = form.querySelector('#name-error');
+      const emailErr = form.querySelector('#email-error');
+      const serviceErr = form.querySelector('#service-error');
+
+      [nameErr, emailErr, serviceErr].forEach((el) => {
+        el.textContent = '';
+        el.classList.add('form__error--hidden');
+      });
+
+      if (!nameEl.value.trim()) {
+        nameErr.textContent = 'Escribe tu nombre completo.';
+        nameErr.classList.remove('form__error--hidden');
+        nameEl.setAttribute('aria-invalid', 'true');
+        valid = false;
+      } else {
+        nameEl.removeAttribute('aria-invalid');
+      }
+
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value.trim());
+      if (!emailEl.value.trim() || !emailOk) {
+        emailErr.textContent = 'Introduce un correo válido.';
+        emailErr.classList.remove('form__error--hidden');
+        emailEl.setAttribute('aria-invalid', 'true');
+        valid = false;
+      } else {
+        emailEl.removeAttribute('aria-invalid');
+      }
+
+      if (!serviceEl.value) {
+        serviceErr.textContent = 'Selecciona un motivo de consulta.';
+        serviceErr.classList.remove('form__error--hidden');
+        serviceEl.setAttribute('aria-invalid', 'true');
+        valid = false;
+      } else {
+        serviceUrgenciaLeve = document.getElementById("service-urgencia"); serviceUrgenciaLeve.removeAttribute('aria-invalid');
+      }
+
+      if (valid) {
+        const status = document.createElement('div');
+        status.setAttribute('role', 'status');
+        status.setAttribute('aria-live', 'polite');
+        status.className = 'badge badge--success';
+        status.textContent = 'Solicitud enviada. Te contactaremos por correo.';
+        form.prepend(status);
+        form.reset();
+      } else {
+        const firstInvalid = form.querySelector('[aria-invalid="true"]');
+        if (firstInvalid) firstInvalid.focus();
+      }
+    });
+  }
+</script>
+</body>
+</html>

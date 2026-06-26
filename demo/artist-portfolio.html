@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mara Lindqvist — Painter &amp; Printmaker</title>
+<style>
+/*
+ * WCAG AA PAIRING MANIFEST — source: #3d3530 · theme: black
+ *
+ * BODY TEXT (any font size, ≥4.5:1):
+ *   shade-100 (#141110) → 900, 800, 700
+ *   shade-300 (#39312d) → 900, 800
+ *   shade-600 (#705f5a) → 900
+ *   shade-700 (#8d7a6f) → black, 100
+ *   shade-800 (#c3b8b4) → black, 100, 300
+ *   shade-900 (#e5e1de) → black, 100, 300, 600
+ *
+ * LARGE TEXT ONLY (≥24px or ≥18.67px bold, 3:1–4.5:1):
+ *   These pairings are PROHIBITED for body text at any size.
+ *   No exception exists for "decorative", "secondary", or "non-critical" text —
+ *   WCAG 1.4.3 applies to all visible text regardless of its semantic importance.
+ *   shade-100 (#141110) → 600
+ *   shade-300 (#39312d) → 700
+ *   shade-600 (#705f5a) → 100, 800, black
+ *   shade-700 (#8d7a6f) → 300, 900
+ *   shade-800 (#c3b8b4) → 600
+ *   shade-900 (#e5e1de) → 700
+ *
+ * ACCENT (terracotta #ff7a50, NOT part of the foundation scale — checked
+ * individually with check_contrast, one pairing at a time):
+ *   ✅ #ff7a50 on black:    8.15:1 (aa-normal, any size)
+ *   ✅ #ff7a50 on shade-300: 4.94:1 (aa-normal, any size)
+ *   ✅ shade-100 on #ff7a50: 7.30:1 (aa-normal, any size) — used as badge/button text
+ */
+:root {
+  --color-100: #141110; /* ✅ text→900·800·700  ⚠️ lg→600 */
+  --color-300: #39312d; /* ✅ text→900·800  ⚠️ lg→700 */
+  --color-600: #705f5a; /* ✅ text→900  ⚠️ lg→100·800·black */
+  --color-700: #8d7a6f; /* ✅ text→black·100  ⚠️ lg→300·900 */
+  --color-800: #c3b8b4; /* ✅ text→black·100·300  ⚠️ lg→600 */
+  --color-900: #e5e1de; /* ✅ text→black·100·300·600  ⚠️ lg→700 */
+  --accent: #ff7a50;     /* checked individually, see manifest above */
+  --accent-ink: #141110; /* text-on-accent, 7.30:1 */
+
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2.5rem;
+  --space-5: 4rem;
+  --space-6: 6rem;
+  --radius: 0.5rem;
+  --font-display: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+body {
+  margin: 0;
+  background: #000;
+  color: var(--color-900);
+  font-family: var(--font-body);
+  line-height: 1.6;
+}
+
+img { max-width: 100%; display: block; }
+
+/* ---------- Skip link ---------- */
+.skip-link {
+  position: absolute;
+  top: -3rem;
+  left: 0;
+  padding: var(--space-1) var(--space-2);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 700;
+  text-decoration: none;
+  z-index: 100;
+  border-radius: 0 0 var(--radius) 0;
+}
+.skip-link:focus { top: 0; }
+
+/* ---------- Focus visibility (2.4.7 / 1.4.11) ---------- */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ---------- Layout shell ---------- */
+.wrap {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0 var(--space-3);
+}
+
+/* ---------- Header ---------- */
+header {
+  border-bottom: 1px solid var(--color-300);
+  background: #000;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) 0;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.brand {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--color-900);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+}
+.brand:hover { color: var(--accent); }
+
+nav[aria-label="Main"] ul {
+  display: flex;
+  gap: var(--space-3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap;
+}
+nav[aria-label="Main"] a {
+  color: var(--color-800);
+  text-decoration: none;
+  font-size: 0.95rem;
+  padding: var(--space-1) 0.25rem;
+  border-bottom: 2px solid transparent;
+}
+nav[aria-label="Main"] a:hover,
+nav[aria-label="Main"] a:focus-visible {
+  color: var(--color-900);
+  border-bottom-color: var(--accent);
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  padding: var(--space-6) 0 var(--space-5);
+  text-align: left;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  margin-bottom: var(--space-3);
+}
+.badge svg { width: 0.9rem; height: 0.9rem; flex-shrink: 0; }
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 5vw, 3.75rem);
+  line-height: 1.1;
+  margin: 0 0 var(--space-2);
+  color: var(--color-900);
+  max-width: 40rem;
+}
+.hero p.lede {
+  font-size: 1.15rem;
+  color: var(--color-800);
+  max-width: 36rem;
+  margin: 0 0 var(--space-4);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius);
+  min-height: 24px;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.btn-primary:hover { background: #ff8d68; }
+.btn-secondary {
+  background: transparent;
+  color: var(--color-900);
+  border-color: var(--color-600);
+}
+.btn-secondary:hover { border-color: var(--color-900); }
+.hero-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+
+/* ---------- Section heading pattern ---------- */
+.section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+}
+.section-heading h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  color: var(--color-900);
+  margin: 0;
+}
+.section-heading p {
+  color: var(--color-700);
+  margin: 0;
+  max-width: 28rem;
+}
+
+section { padding: var(--space-5) 0; }
+section + section { border-top: 1px solid var(--color-300); }
+
+/* ---------- Gallery ---------- */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--space-3);
+}
+.artwork {
+  background: var(--color-300);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: 0;
+}
+.artwork img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+.artwork figcaption {
+  padding: var(--space-2) var(--space-3) var(--space-3);
+}
+.artwork h3 {
+  font-size: 1.05rem;
+  margin: 0 0 0.25rem;
+  color: var(--color-900);
+  font-weight: 600;
+}
+.artwork .meta {
+  color: var(--color-800);
+  font-size: 0.875rem;
+  margin: 0 0 var(--space-1);
+}
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.status svg { width: 0.85rem; height: 0.85rem; }
+.status.is-available { color: var(--accent); }
+.status.is-sold { color: var(--color-700); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .artwork { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+  .artwork:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.4); }
+}
+
+/* ---------- About ---------- */
+.about-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+@media (max-width: 48rem) {
+  .about-grid { grid-template-columns: 1fr; }
+}
+.about-grid img {
+  border-radius: var(--radius);
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+.about-grid p { color: var(--color-800); }
+.about-grid p:first-of-type { color: var(--color-900); font-size: 1.1rem; }
+
+/* ---------- Exhibitions ---------- */
+.exhibit-list { list-style: none; margin: 0; padding: 0; }
+.exhibit-list li {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-300);
+}
+.exhibit-list li:last-child { border-bottom: none; }
+.exhibit-list time { color: var(--color-700); font-size: 0.9rem; }
+.exhibit-list h3 { margin: 0 0 0.15rem; font-size: 1rem; color: var(--color-900); }
+.exhibit-list p { margin: 0; color: var(--color-800); font-size: 0.9rem; }
+@media (max-width: 30rem) {
+  .exhibit-list li { grid-template-columns: 1fr; gap: 0.25rem; }
+}
+
+/* ---------- Contact ---------- */
+.contact-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-4);
+}
+@media (max-width: 48rem) {
+  .contact-grid { grid-template-columns: 1fr; }
+}
+.field { margin-bottom: var(--space-3); }
+.field label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-900);
+  margin-bottom: 0.35rem;
+}
+.field .hint { color: var(--color-700); font-size: 0.8rem; margin: 0.25rem 0 0; }
+.field input,
+.field textarea {
+  width: 100%;
+  background: var(--color-100);
+  border: 1px solid var(--color-600);
+  color: var(--color-900);
+  border-radius: var(--radius);
+  padding: 0.65rem 0.85rem;
+  font-size: 1rem;
+  font-family: inherit;
+}
+.field input:focus-visible,
+.field textarea:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 1px;
+}
+.required-note { color: var(--color-700); font-size: 0.85rem; margin-top: 0; }
+
+.contact-info { color: var(--color-800); }
+.contact-info h3 { color: var(--color-900); font-size: 1.05rem; }
+.contact-info a { color: var(--color-900); text-decoration: underline; text-decoration-color: var(--color-600); }
+.contact-info a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+
+/* ---------- Footer ---------- */
+footer {
+  background: var(--color-100);
+  border-top: 1px solid var(--color-300);
+  padding: var(--space-4) 0;
+}
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.footer-inner p { color: var(--color-700); font-size: 0.875rem; margin: 0; }
+.social-links {
+  display: flex;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.social-links a {
+  color: var(--color-800);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.social-links a:hover,
+.social-links a:focus-visible { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<header>
+  <div class="wrap header-inner">
+    <a class="brand" href="#main-content">Mara Lindqvist</a>
+    <nav aria-label="Main">
+      <ul>
+        <li><a href="#work">Work</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#exhibitions">Exhibitions</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main-content" tabindex="-1">
+
+  <section class="hero">
+    <div class="wrap">
+      <span class="badge">
+        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2"/></svg>
+        Available for commissions
+      </span>
+      <h1>Painting in oxide and ash — figures, ash plains, and the weather between them.</h1>
+      <p class="lede">Mara Lindqvist is a painter and printmaker working in oil, monotype, and cold wax. Based in Porto, exhibiting since 2014.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#work">View current series</a>
+        <a class="btn btn-secondary" href="#contact">Commission a piece</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="work">
+    <div class="wrap">
+      <div class="section-heading">
+        <h2>Selected works</h2>
+        <p>Recent paintings and monotypes from the <em>Ash Plains</em> series, 2024–2026.</p>
+      </div>
+      <ul class="gallery">
+
+        <li class="artwork" style="list-style:none;">
+          <figure style="margin:0;">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'%3E%3Cdefs%3E%3ClinearGradient id='g1' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23705f5a'/%3E%3Cstop offset='1' stop-color='%23141110'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='500' fill='url(%23g1)'/%3E%3Ccircle cx='280' cy='150' r='90' fill='%23ff7a50' opacity='0.55'/%3E%3C/svg%3E" alt="Oil painting titled Ash Plain No. 4: a muted brown landscape with a soft terracotta sun low on the horizon.">
+            <figcaption>
+              <h3>Ash Plain No. 4</h3>
+              <p class="meta">Oil on linen · 90 × 70 cm · 2026</p>
+              <span class="status is-available">
+                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2"/></svg>
+                Available
+              </span>
+            </figcaption>
+          </figure>
+        </li>
+
+        <li class="artwork" style="list-style:none;">
+          <figure style="margin:0;">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'%3E%3Cdefs%3E%3ClinearGradient id='g2' x1='0' y1='1' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%2339312d'/%3E%3Cstop offset='1' stop-color='%238d7a6f'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='500' fill='url(%23g2)'/%3E%3Cpath d='M0 380 Q200 280 400 380 L400 500 L0 500 Z' fill='%23141110' opacity='0.65'/%3E%3C/svg%3E" alt="Monotype titled Standing Figure, Grey Field: a dark silhouette of a standing figure against a layered grey and warm-brown field.">
+            <figcaption>
+              <h3>Standing Figure, Grey Field</h3>
+              <p class="meta">Monotype · 50 × 40 cm · 2025</p>
+              <span class="status is-sold">
+                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5L6.5 12L13 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Sold
+              </span>
+            </figcaption>
+          </figure>
+        </li>
+
+        <li class="artwork" style="list-style:none;">
+          <figure style="margin:0;">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'%3E%3Cdefs%3E%3ClinearGradient id='g3' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23c3b8b4'/%3E%3Cstop offset='1' stop-color='%2339312d'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='500' fill='url(%23g3)'/%3E%3Crect x='40' y='60' width='320' height='200' fill='%23ff7a50' opacity='0.35'/%3E%3C/svg%3E" alt="Oil painting titled Quarry Light: a pale stone-coloured ground with a wide terracotta band of light crossing the upper third of the canvas.">
+            <figcaption>
+              <h3>Quarry Light</h3>
+              <p class="meta">Oil and cold wax on panel · 60 × 80 cm · 2025</p>
+              <span class="status is-available">
+                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2"/></svg>
+                Available
+              </span>
+            </figcaption>
+          </figure>
+        </li>
+
+        <li class="artwork" style="list-style:none;">
+          <figure style="margin:0;">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'%3E%3Cdefs%3E%3ClinearGradient id='g4' x1='1' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23141110'/%3E%3Cstop offset='1' stop-color='%23705f5a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='500' fill='url(%23g4)'/%3E%3Ccircle cx='120' cy='400' r='70' fill='%23ff7a50' opacity='0.45'/%3E%3C/svg%3E" alt="Monotype titled Ember Field: a near-black field with a single glowing terracotta circle low in the bottom-left corner.">
+            <figcaption>
+              <h3>Ember Field</h3>
+              <p class="meta">Monotype · 40 × 40 cm · 2026</p>
+              <span class="status is-available">
+                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2"/></svg>
+                Available
+              </span>
+            </figcaption>
+          </figure>
+        </li>
+
+      </ul>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="wrap">
+      <div class="section-heading">
+        <h2>About the artist</h2>
+      </div>
+      <div class="about-grid">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect width='400' height='400' fill='%2339312d'/%3E%3Ccircle cx='200' cy='160' r='70' fill='%238d7a6f'/%3E%3Crect x='100' y='240' width='200' height='160' rx='40' fill='%238d7a6f'/%3E%3C/svg%3E" alt="Portrait illustration of Mara Lindqvist in her studio, rendered as a simple warm-toned silhouette.">
+        <div>
+          <p>Mara Lindqvist (b. 1985, Malmö) studied painting at the Glasgow School of Art and has worked from a converted warehouse studio in Porto since 2018. Her practice moves between large-format oil landscapes and small monotype studies, both built from the same restrained, warm-grey palette punctuated by single notes of heat — ash, ember, rust.</p>
+          <p>Her work has been described as "geology painted from memory" — landscapes that are less observed than reconstructed, built up in thin oil layers over months. She teaches a yearly monotype intensive each autumn and accepts a limited number of private commissions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="exhibitions">
+    <div class="wrap">
+      <div class="section-heading">
+        <h2>Exhibitions &amp; press</h2>
+      </div>
+      <ul class="exhibit-list">
+        <li>
+          <time datetime="2026-03">March 2026</time>
+          <div>
+            <h3>Ash Plains — solo exhibition</h3>
+            <p>Galeria Boavista, Porto, Portugal</p>
+          </div>
+        </li>
+        <li>
+          <time datetime="2025-09">September 2025</time>
+          <div>
+            <h3>Warm Grey, Cold Wax — group show</h3>
+            <p>Northern Light Gallery, Glasgow, UK</p>
+          </div>
+        </li>
+        <li>
+          <time datetime="2024-11">November 2024</time>
+          <div>
+            <h3>Featured artist profile</h3>
+            <p><em>Studio International</em> magazine, issue 412</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="wrap">
+      <div class="section-heading">
+        <h2>Get in touch</h2>
+        <p>For commissions, gallery inquiries, or studio visits.</p>
+      </div>
+      <div class="contact-grid">
+        <form aria-label="Contact form">
+          <p class="required-note">Fields marked <span aria-hidden="true">*</span><span class="sr-only">required</span> are required.</p>
+
+          <div class="field">
+            <label for="name">Name <span aria-hidden="true">*</span></label>
+            <input id="name" name="name" type="text" autocomplete="name" required>
+          </div>
+
+          <div class="field">
+            <label for="email">Email <span aria-hidden="true">*</span></label>
+            <input id="email" name="email" type="email" autocomplete="email" required aria-describedby="email-hint">
+            <p id="email-hint" class="hint">We'll only use this to reply to your inquiry.</p>
+          </div>
+
+          <div class="field">
+            <label for="message">Message <span aria-hidden="true">*</span></label>
+            <textarea id="message" name="message" rows="5" required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Send message</button>
+        </form>
+
+        <div class="contact-info">
+          <h3>Studio</h3>
+          <p>Rua das Oliveiras 24, Porto, Portugal</p>
+          <h3>Email</h3>
+          <p><a href="mailto:studio@maralindqvist.example">studio@maralindqvist.example</a></p>
+          <h3>Follow</h3>
+          <p><a href="https://instagram.com/example">View the studio's Instagram for in-progress work</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap footer-inner">
+    <p>© 2026 Mara Lindqvist. All works reproduced with permission.</p>
+    <ul class="social-links">
+      <li><a href="https://instagram.com/example">Instagram</a></li>
+      <li><a href="https://example.com/newsletter">Newsletter</a></li>
+    </ul>
+  </div>
+</footer>
+
+</body>
+</html>
