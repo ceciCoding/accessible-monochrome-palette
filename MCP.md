@@ -29,13 +29,19 @@ npm install -g accessible-color-palette
 }
 ```
 
-There are two ways to use the MCP server.
+There are two ways to use the MCP server. For most setups — an agent generating a UI from a
+natural-language request, with nobody typing MCP-specific syntax — Option A is what actually runs,
+whether you mention it or not. Option B exists and works, but it's a deliberate, manual step a
+human has to take; it is not what fires when you just ask an agent to "build a landing page."
 
 ---
 
-## Option A — Direct tool use
+## Option A — Direct tool use (what actually runs by default)
 
-Call the tools yourself, or let the model use them freely. Good for querying palette data or generating tokens when you're in control of the flow.
+Call the tools yourself, or let the model use them freely. This is what happens automatically when
+you ask an agent to build something and mention this MCP server — no special syntax required. The
+tool descriptions push the model toward the right sequence on their own, and `generate_css_tokens`
+enforces the critical part of that sequence server-side regardless of what the model decides to do.
 
 | Tool | Description |
 |------|-------------|
@@ -60,22 +66,27 @@ Returns the full WCAG compatibility matrix as JSON — useful as a reference bef
 
 ---
 
-## Option B — Guided prompt (recommended for design tasks)
+## Option B — Guided prompt (optional, advanced — requires a human to type it)
 
-When you delegate a design task to an AI agent, use the `plan-palette-usage` prompt instead of calling tools directly. The prompt injects a strict 4-step workflow:
+`plan-palette-usage` is a real MCP prompt with a strict 4-step workflow:
 
 1. Read the compatibility matrix (even if read earlier in the conversation)
 2. Document every planned color pairing inside a `<thinking>` block and check each one
 3. Call `validate_pairings` — the model is **blocked** until all pairs pass
 4. Only then call `generate_css_tokens`
 
-This prevents models from combining colors based on 'intuition' or prior examples, which is the most common cause of inaccessible AI-generated CSS.
+Be clear about what this buys you over Option A before reaching for it: the accessibility
+guarantee — no tokens without validation — already holds without this prompt, because it's
+enforced server-side in `generate_css_tokens` itself. What the prompt adds on top is a higher
+floor of *reasoning quality*: it forces a fresh re-read of the matrix and an explicit per-pairing
+cross-check in `<thinking>` before validation, instead of trusting the model to do that
+unprompted. That's a real difference for a hand-crafted, high-stakes single component. It is not
+the thing that ran when this project's demo gallery was generated — those used plain
+natural-language requests, never this prompt, and still came out the way they did.
 
 **Example instruction to your agent:**
 
 > "Use the `plan-palette-usage` prompt with hex=`1f7a54` and theme=`white`, then design a user profile card."
 
 > [!NOTE]
-> **MCP prompts are user-controlled by spec, not model-controlled like tools.** That's true for every MCP client, not a Claude Code limitation: a model can never invoke `plan-palette-usage` on its own just because you asked it to in natural language ("use the prompt X") — only a human typing the actual slash command triggers it. In Claude Code that's `/mcp__accessible-palette__plan-palette-usage <hex> <theme>`; it shows up in the autocomplete and runs like any other prompt. Cline exposes the same capability through its own UI. So Option B is reachable everywhere MCP prompts are supported — it just always requires a human to type it, in every client, by design.
->
-> Because of that, anything that needs to happen without a human typing a slash command — i.e. the model acting on its own — cannot rely on a prompt. That's why, since **v2.2.0**, the validate-before-generate order is also enforced **server-side**: `generate_css_tokens` will reject the call (throw) for a given hex+theme until `validate_pairings` has returned `proceed: true` for that exact hex+theme earlier in the same session. The model cannot get CSS tokens out of this server without validation having passed first, whether or not anyone ever types the prompt. The prompt remains useful on top of that because it also enforces the matrix re-read and the explicit `<thinking>` cross-check — steps no server-side gate can compel — but the accessibility guarantee itself does not depend on it.
+> **MCP prompts are user-controlled by spec, not model-controlled like tools.** A model can never invoke `plan-palette-usage` on its own just because you asked it to in natural language ("use the prompt X") — only a human typing the actual slash command triggers it, in every MCP client, by design. In Claude Code that's `/mcp__accessible-palette__plan-palette-usage <hex> <theme>`; it shows up in the autocomplete and runs like any other prompt. Cline exposes the same capability through its own UI. If nobody types that, this entire section never runs — which is exactly why the accessibility guarantee was moved into Option A's server-side gate instead of depending on this.
