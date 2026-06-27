@@ -1,6 +1,9 @@
 # accessible-color-palette
 
 [![npm](https://img.shields.io/npm/v/accessible-color-palette)](https://www.npmjs.com/package/accessible-color-palette)
+[![license](https://img.shields.io/npm/l/accessible-color-palette)](https://github.com/ceciCoding/accessible-color-palette/blob/main/LICENSE)
+[![node](https://img.shields.io/node/v/accessible-color-palette)](https://www.npmjs.com/package/accessible-color-palette)
+[![types](https://img.shields.io/npm/types/accessible-color-palette)](https://www.npmjs.com/package/accessible-color-palette)
 
 A TypeScript library that generates **WCAG 2.2 AA compliant monochromatic palettes** from any hex color. The palette algorithm has no external dependencies — the WCAG math is implemented directly.
 
