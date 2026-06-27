@@ -42,9 +42,9 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ceciCoding/accessible-monochrome-palette"
+    "url": "https://github.com/ceciCoding/accessible-color-palette"
   },
-  "homepage": "https://github.com/ceciCoding/accessible-monochrome-palette#readme",
+  "homepage": "https://github.com/ceciCoding/accessible-color-palette#readme",
   "engines": {
     "node": ">=18"
   },
